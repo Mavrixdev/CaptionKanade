@@ -1,4 +1,4 @@
-import React, { useState, useRef, lazy, Suspense } from 'react';
+import React, { useState, useRef } from 'react';
 import { Upload, Type, Palette, Hash, Eye, EyeOff, X, Image, Crown, Loader2 } from 'lucide-react';
 import { IoPaperPlane } from "react-icons/io5";
 import { MdNearMeDisabled } from "react-icons/md";
@@ -26,7 +26,6 @@ const CaptionText = ({ value, onChange }: { value: string; onChange: (value: str
 );
 
 const IconUpload = React.memo(({ 
-  iconFile, 
   iconPreview, 
   isUploading, 
   onUpload, 
@@ -435,10 +434,10 @@ const CaptionBuilder: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold mb-2">
           Caption Builder
         </h1>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="dark:text-gray-300">
           Tạo caption đẹp mắt với gradient và icon tùy chỉnh
         </p>
       </div>
