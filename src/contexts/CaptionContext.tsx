@@ -3,9 +3,19 @@ import { Caption } from '../types/Caption';
 const API_URL = import.meta.env.VITE_API_URL;
 type SortBy = 'newest' | 'oldest' | 'popular';
 
+interface PaginatedResponse {
+  total: number;
+  page: number;
+  page_size: number;
+  captions: Caption[];
+}
+
 interface CaptionContextType {
   captions: Caption[];
   filteredCaptions: Caption[];
+  totalCaptions: number;
+  currentPage: number;
+  pageSize: number;
   filter: {
     searchQuery: string;
     tags: string[];
@@ -17,6 +27,7 @@ interface CaptionContextType {
   addCaption: (caption: Omit<Caption, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   deleteCaption: (id: string) => Promise<void>;
   toggleFavorite: (id: string) => void;
+  fetchCaptions: (page: number) => Promise<void>;
   user: {
     isMember: boolean;
     uploadQuota: number;
@@ -38,7 +49,9 @@ export const useCaptions = () => {
 
 export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [captions, setCaptions] = useState<Caption[]>([]);
-  const [icon_url, seticon_url] = useState<File | null>(null);
+  const [totalCaptions, setTotalCaptions] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [filter, setFilter] = useState<CaptionContextType['filter']>({
     searchQuery: '',
     tags: [],
@@ -49,24 +62,28 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     isMember: false,
     uploadQuota: 5
   });
+
   // Fetch captions on mount
   useEffect(() => {
-    fetchCaptions();
+    fetchCaptions(1);
   }, []);
 
-  const fetchCaptions = async () => {
+  const fetchCaptions = async (page: number) => {
     try {
-      const response = await fetch(`${API_URL}/captions`, {
+      const response = await fetch(`${API_URL}/captions/${page}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
       if (response.ok) {
-        const data = await response.json();
-        setCaptions(data.map((caption: Caption) => ({
+        const data: PaginatedResponse = await response.json();
+        setCaptions(data.captions.map(caption => ({
           ...caption,
           isFavorite: false
         })));
+        setTotalCaptions(data.total);
+        setCurrentPage(data.page);
+        setPageSize(data.page_size);
       }
     } catch (error) {
       console.error('Error fetching captions:', error);
@@ -81,16 +98,19 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       formData.append('colortop', newCaption.colortop);
       formData.append('colorbottom', newCaption.colorbottom);
       formData.append('author', newCaption.author);
+      formData.append('type', newCaption.type);
 
       if (newCaption.tags && newCaption.tags.length > 0) {
         newCaption.tags.forEach(tag => formData.append('tags', tag));
       }
 
-      if (newCaption.icon_url) {
-        formData.append('icon_url', newCaption.icon_url);
+      // Handle icon file
+      const iconFile = (newCaption as any).icon_file as File | undefined;
+      if (iconFile) {
+        formData.append('icon_url', iconFile);
       }
 
-      const response = await fetch(`${API_URL}/captions`, {
+      const response = await fetch(`${API_URL}/captions/create`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
@@ -98,9 +118,16 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         body: formData
       });
 
-      if (response.ok) {
-        const savedCaption = await response.json();
-        setCaptions(prev => [...prev, { ...savedCaption, isFavorite: false }]);
+      if (!response.ok) {
+        throw new Error('Failed to create caption');
+      }
+
+      const savedCaption = await response.json();
+      setCaptions(prev => [...prev, { ...savedCaption, isFavorite: false }]);
+
+      // Only update quota if icon was uploaded successfully
+      if (iconFile) {
+        updateUserQuota();
       }
     } catch (error) {
       console.error('Error adding caption:', error);
@@ -149,7 +176,7 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return user.uploadQuota;
   };
 
-  // Filter and sort captions
+  // Filter and sort captions - now only filter the current page
   const filteredCaptions = captions
     .filter(caption => {
       const matchesSearch = caption.text.toLowerCase().includes(filter.searchQuery.toLowerCase());
@@ -178,12 +205,16 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const value: CaptionContextType = {
     captions,
     filteredCaptions,
+    totalCaptions,
+    currentPage,
+    pageSize,
     filter,
     setFilter: (newFilter) => setFilter(prev => ({ ...prev, ...newFilter })),
     availableTags,
     addCaption,
     deleteCaption,
     toggleFavorite,
+    fetchCaptions,
     user,
     updateUserQuota,
     canUploadIcon,

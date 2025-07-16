@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Home, Edit3, BookOpen, Download, Moon, Sun, User } from 'lucide-react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { Menu, X, Home, Edit3, BookOpen, Moon, Sun, User } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import CaptionBuilder from './components/CaptionBuilder';
 import CaptionLibrary from './components/CaptionLibrary';
-import ExportImport from './components/ExportImport';
 import Login from './components/Login';
 import Register from './components/Register';
 import UserPage from './components/UserPage';
@@ -13,6 +12,7 @@ import ResetPassword from './components/ResetPassword';
 import { CaptionProvider } from './contexts/CaptionContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Toaster } from 'react-hot-toast';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,7 +43,6 @@ const Navigation = () => {
     { id: '/', label: 'Home', icon: Home },
     { id: '/builder', label: 'Caption Builder', icon: Edit3 },
     { id: '/library', label: 'Library', icon: BookOpen },
-    { id: '/export', label: 'Export/Import', icon: Download }
   ];
 
   // Không hiển thị navigation trên trang đăng nhập và đăng ký
@@ -160,6 +159,29 @@ function App() {
       <AuthProvider>
         <CaptionProvider>
           <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 transition-all duration-300">
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 3000,
+                style: {
+                  background: '#333',
+                  color: '#fff',
+                  borderRadius: '8px',
+                },
+                success: {
+                  iconTheme: {
+                    primary: '#10B981',
+                    secondary: '#fff',
+                  },
+                },
+                error: {
+                  iconTheme: {
+                    primary: '#EF4444',
+                    secondary: '#fff',
+                  },
+                },
+              }}
+            />
             <Navigation />
             
             {/* Main Content */}
@@ -185,12 +207,6 @@ function App() {
                 <Route path="/library" element={
                   <ProtectedRoute>
                     <CaptionLibrary />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/export" element={
-                  <ProtectedRoute>
-                    <ExportImport />
                   </ProtectedRoute>
                 } />
                 
