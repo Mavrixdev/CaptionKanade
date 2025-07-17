@@ -43,8 +43,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userInfo, setUserInfo] = useState<User | null>(null);
 
   // Function to parse JWT and get expiration time
-  const getTokenExpiration = (token: string): number => {
+  const getTokenExpiration = (token: string | null): number => {
     try {
+      if (!token) {
+        return 0;
+      }
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.exp * 1000; // Convert to milliseconds
     } catch {
@@ -53,7 +56,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Function to set up token refresh
-  const setupTokenRefresh = (token: string) => {
+  const setupTokenRefresh = () => {
+    const token = localStorage.getItem('auth_token');
     const expTime = getTokenExpiration(token);
     const currentTime = Date.now();
     const timeUntilRefresh = expTime - currentTime - 5 * 60 * 1000; // Refresh 5 minutes before expiration
@@ -83,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const data = await response.json();
             setToken(data.token);
             localStorage.setItem('auth_token', data.token);
-            setupTokenRefresh(data.token);
+            setupTokenRefresh();
           } else {
             console.error(`Failed to refresh token: ${response.statusText} - ${response.status}`);
             logout();
@@ -115,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             posted_count: payload.posted_count,
             updated_at: payload.updated_at
           });
-          setupTokenRefresh(savedToken);
+          setupTokenRefresh();
         } else {
           localStorage.removeItem('auth_token');
         }
@@ -175,7 +179,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           updated_at: decodedPayload.updated_at ?? new Date().toISOString()
         });
 
-        setupTokenRefresh(data.data.token);
+        setupTokenRefresh();
       } catch (tokenError: any) {
         // If token parsing fails, clean up and throw error
         setToken(null);
