@@ -323,7 +323,7 @@ const Preview = React.memo(({
 ));
 
 const CaptionBuilder: React.FC = () => {
-  const { addCaption, user: captionUser, updateUserQuota, canUploadIcon, getRemainingQuota } = useCaptions();
+  const { addCaption, user: captionUser, canUploadIcon, getRemainingQuota } = useCaptions();
   const { user } = useAuth();
   const [captionText, setCaptionText] = useState('');
   const [selectedColor, setSelectedColor] = useState('#ffffff');
@@ -406,7 +406,7 @@ const CaptionBuilder: React.FC = () => {
         color: selectedColor,
         colortop: selectedColorTop,
         colorbottom: selectedColorBottom,
-        isFavorite: false
+        is_favorite: false
       };
 
       await addCaption(captionData);

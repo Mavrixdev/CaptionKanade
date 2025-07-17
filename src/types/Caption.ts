@@ -11,7 +11,8 @@ export interface Caption {
   colorbottom: string;
   created_at: string;
   updated_at: string;
-  isFavorite?: boolean; // Frontend only
+  is_favorite?: boolean;
+  is_popular?: boolean;
 }
 
 export interface CaptionCreateForm {
@@ -38,7 +39,6 @@ export interface CaptionFilter {
   tags: string[];
   searchQuery: string;
   sortBy: 'newest' | 'oldest' | 'popular';
-  onlyFavorites: boolean;
 }
 
 export interface UserQuota {

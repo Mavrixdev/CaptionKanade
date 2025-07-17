@@ -53,7 +53,7 @@ const HomePage: React.FC = () => {
                 onClick={() => navigate('/library')}
                 className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-pink-200 dark:border-gray-600 text-gray-800 dark:text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:bg-white dark:hover:bg-gray-700 hover:shadow-lg"
               >
-                Xem thư viện ({captions.length})
+                Xem thư viện
               </button>
             </div>
           </div>
@@ -73,7 +73,7 @@ const HomePage: React.FC = () => {
               💡 Gợi ý caption hot trend
             </h3>
             <p className="text-gray-600 dark:text-gray-300">
-              Những caption được yêu thích nhất từ cộng đồng
+              Những caption được yêu thích nhất từ cộng đồng (T xao l day)
             </p>
           </div>
 
@@ -196,7 +196,7 @@ const HomePage: React.FC = () => {
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
                 <div className="text-4xl font-bold text-white mb-2">
-                  {captions.filter(c => c.isFavorite).length}
+                  {captions.filter(c => c.is_favorite).length}
                 </div>
                 <div className="text-pink-100">Caption yêu thích</div>
               </div>

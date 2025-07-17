@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Mail, Calendar, Hash, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { Mail, Calendar, Hash, Clock, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import { FaDev } from "react-icons/fa";
 import { FiDollarSign } from "react-icons/fi";
 
@@ -18,10 +18,9 @@ interface ExtendedUserInfo {
 }
 
 const UserPage: React.FC = () => {
-  const { user: authUser } = useAuth();
-
-  // Get extended user info from JWT token
-  const getUserInfo = (): ExtendedUserInfo | null => {
+  const { user: authUser, getUserInfo } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const getLocalUserInfo = (): ExtendedUserInfo | null => {
     const token = localStorage.getItem('auth_token');
     if (!token) return null;
 
@@ -32,19 +31,50 @@ const UserPage: React.FC = () => {
         id: payload.id,
         is_active: payload.is_active,
         is_verified: payload.is_verified,
-        developer_access: payload.developer_access,
-        plan_name: payload.plan_name,
-        expired_at: payload.expired_at,
-        posted_count: payload.posted_count,
-        created_at: payload.created_at,
-        updated_at: payload.updated_at,
+        developer_access: payload.developer_access ?? false,
+        plan_name: payload.plan_name ?? null,
+        expired_at: payload.expired_at ?? null,
+        posted_count: payload.posted_count ?? 0,
+        created_at: payload.created_at ?? new Date().toISOString(),
+        updated_at: payload.updated_at ?? new Date().toISOString(),
       };
     } catch {
       return null;
     }
   };
 
-  const userInfo = getUserInfo();
+  const [userInfo, setUserInfo] = useState<ExtendedUserInfo | null>(getLocalUserInfo());
+
+  // Fetch user info on mount
+  useEffect(() => {
+    handleRefresh();
+  }, []);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const data = await getUserInfo();
+      if (data) {
+        const localInfo = getLocalUserInfo();
+        setUserInfo({
+          email: localInfo?.email ?? '',
+          id: localInfo?.id ?? '',
+          is_active: localInfo?.is_active ?? false,
+          is_verified: localInfo?.is_verified ?? false,
+          developer_access: localInfo?.developer_access ?? false,
+          plan_name: localInfo?.plan_name ?? null,
+          expired_at: localInfo?.expired_at ?? null,
+          posted_count: data.posted_count ?? 0,
+          created_at: localInfo?.created_at ?? new Date().toISOString(),
+          updated_at: data.updated_at ?? new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   if (!authUser || !userInfo) {
     return (
@@ -69,7 +99,8 @@ const UserPage: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
           {/* Header with Avatar */}
-          <div className="relative h-32 bg-gradient-to-r from-pink-500 to-purple-600">
+          <div className="relative h-32">
+            <img src='/banner.png' alt="Banner" className="w-full h-full object-cover" />
             <div className="absolute -bottom-12 left-8">
               <div className="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1">
                 <div className="w-full h-full rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center">
@@ -160,13 +191,23 @@ const UserPage: React.FC = () => {
 
               {/* Usage Stats */}
               <div className="space-y-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Usage Statistics
-                  </h2>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Your activity on the platform
-                  </p>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      Usage Statistics
+                    </h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      Your activity on the platform
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
+                    className="p-2 text-pink-500 hover:text-pink-600 disabled:text-gray-400 transition-colors"
+                    title="Refresh statistics"
+                  >
+                    <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  </button>
                 </div>
 
                 <div className="p-4 bg-pink-50 dark:bg-pink-900/20 rounded-lg">

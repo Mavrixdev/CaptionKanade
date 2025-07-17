@@ -15,7 +15,7 @@ const CaptionLibrary: React.FC = () => {
     availableTags, 
     toggleFavorite, 
     deleteCaption,
-    fetchCaptions
+    fetchCaptions,
   } = useCaptions();
   const { user } = useAuth();
   const [showFilters, setShowFilters] = useState(false);
@@ -58,13 +58,6 @@ const CaptionLibrary: React.FC = () => {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // Show success message
-    const event = new CustomEvent('caption-copied');
-    window.dispatchEvent(event);
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -102,19 +95,7 @@ const CaptionLibrary: React.FC = () => {
         {/* Filters */}
         {showFilters && (
           <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setFilter({ onlyFavorites: !filter.onlyFavorites })}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                  filter.onlyFavorites
-                    ? 'bg-pink-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                <Heart size={16} />
-                Yêu thích
-              </button>
-              
+            <div className="flex flex-wrap gap-2">              
               {['newest', 'oldest', 'popular'].map(sort => (
                 <button
                   key={sort}
@@ -184,6 +165,14 @@ const CaptionLibrary: React.FC = () => {
               >
                 {/* Caption Preview */}
                 <div className="relative aspect-video">
+                  {/* Gắn tag HOT nếu caption là phổ biến */}
+                  {caption.is_popular && (
+                    <div className="absolute top-2 left-2 z-10">
+                      <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-bounce">
+                        HOT
+                      </span>
+                    </div>
+                  )}
                   <div 
                     className="w-full h-full"
                     style={{
@@ -251,13 +240,13 @@ const CaptionLibrary: React.FC = () => {
                     <button
                       onClick={() => toggleFavorite(caption.id)}
                       className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm transition-colors ${
-                        caption.isFavorite
+                        caption.is_favorite
                           ? 'bg-pink-200 text-white'
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
-                      {caption.isFavorite ? <FaHeart size={14} /> : <Heart size={14} />}
-                      {caption.isFavorite ? 'Bỏ yêu thích' : 'Yêu thích'}
+                      {caption.is_favorite ? <FaHeart size={14} /> : <Heart size={14} />}
+                      {caption.is_favorite ? 'Bỏ lưu' : 'Lưu'}
                     </button>                    
 
                     {(caption.author === user?.id) && (

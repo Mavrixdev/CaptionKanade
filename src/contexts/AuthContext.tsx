@@ -7,6 +7,8 @@ interface User {
   email: string;
   is_active: boolean;
   is_verified: boolean;
+  posted_count: number;
+  updated_at: string;
 }
 
 interface AuthContextType {
@@ -19,6 +21,8 @@ interface AuthContextType {
   token: string | null;
   verifyAccount: (token: string) => Promise<void>;
   submitOtp: (token: string, otp: number) => Promise<void>;
+  getUserInfo: () => Promise<User | null>;
+  userInfo: User | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshTimer, setRefreshTimer] = useState<number | null>(null);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
 
   // Function to parse JWT and get expiration time
   const getTokenExpiration = (token: string): number => {
@@ -106,7 +111,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: payload.id,
             email: payload.email,
             is_active: payload.is_active,
-            is_verified: payload.is_verified
+            is_verified: payload.is_verified,
+            posted_count: payload.posted_count,
+            updated_at: payload.updated_at
           });
           setupTokenRefresh(savedToken);
         } else {
@@ -163,7 +170,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: decodedPayload.id,
           email: decodedPayload.email,
           is_active: decodedPayload.is_active ?? false,
-          is_verified: decodedPayload.is_verified ?? false
+          is_verified: decodedPayload.is_verified ?? false,
+          posted_count: decodedPayload.posted_count ?? 0,
+          updated_at: decodedPayload.updated_at ?? new Date().toISOString()
         });
 
         setupTokenRefresh(data.data.token);
@@ -178,6 +187,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
+  };
+
+  const getUserInfo = async () => {
+    const response = await fetch(`${API_URL}/v1/member/get-user-data`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user_id: user?.id
+      })
+    });
+    const data = await response.json();
+    setUserInfo(data);
+    return data;
   };
 
   const register = async (email: string, password: string) => {
@@ -229,9 +254,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     login,
     register,
+    getUserInfo,
     logout,
     getAuthHeader,
     token,
+    userInfo,
     verifyAccount: async (token: string) => {
       setLoading(true);
       try {
@@ -273,7 +300,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } finally {
         setLoading(false);
       }
-    }
+    },
   };
 
   return (

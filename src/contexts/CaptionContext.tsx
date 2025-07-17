@@ -28,7 +28,7 @@ interface CaptionContextType {
   availableTags: string[];
   addCaption: (caption: Omit<Caption, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   deleteCaption: (id: string) => Promise<void>;
-  toggleFavorite: (id: string) => void;
+  toggleFavorite: (id: string) => Promise<void>;
   fetchCaptions: (page: number) => Promise<void>;
   user: {
     isMember: boolean;
@@ -86,7 +86,6 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const data: PaginatedResponse = await response.json();
         setCaptions(data.captions.map(caption => ({
           ...caption,
-          isFavorite: false
         })));
         setTotalCaptions(data.total);
         setCurrentPage(data.page);
@@ -108,7 +107,7 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       formData.append('type', newCaption.type);
 
       if (newCaption.tags && newCaption.tags.length > 0) {
-        newCaption.tags.forEach(tag => formData.append('tags', tag));
+        formData.append('tags', JSON.stringify(newCaption.tags));
       }
 
       // Handle icon file
@@ -130,7 +129,7 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       const savedCaption = await response.json();
-      setCaptions(prev => [...prev, { ...savedCaption, isFavorite: false }]);
+      setCaptions(prev => [...prev, { ...savedCaption, is_favorite: false }]);
 
       // Only update quota if icon was uploaded successfully
       if (iconFile) {
@@ -160,12 +159,28 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
-  const toggleFavorite = (id: string) => {
-    setCaptions(prev => prev.map(caption => 
-      caption.id === id 
-        ? { ...caption, isFavorite: !caption.isFavorite }
-        : caption
-    ));
+  const toggleFavorite = async (id: string) => {
+    try {
+      const isFavorited = captions.find(caption => caption.id === id)?.is_favorite || false;
+      const endpoint = isFavorited ? '/v1/member/unfavorite-post' : '/v1/member/add-favorite-post';
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: authUser?.id,
+          post_id: id
+        })
+      });
+
+      if (response.ok) {
+        setCaptions(prev => prev.map(caption => caption.id === id ? { ...caption, is_favorite: !isFavorited } : caption));
+      }
+    } catch (error) {
+      console.error('Error toggling saved status:', error);
+    }
   };
 
   const updateUserQuota = () => {
@@ -188,8 +203,8 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     .filter(caption => {
       const matchesSearch = caption.text.toLowerCase().includes(filter.searchQuery.toLowerCase());
       const matchesTags = filter.tags.length === 0 || (caption.tags && filter.tags.every(tag => caption.tags?.includes(tag)));
-      const matchesFavorite = !filter.onlyFavorites || caption.isFavorite;
-      return matchesSearch && matchesTags && matchesFavorite;
+      const matchesSaved = !filter.onlyFavorites || caption.is_favorite;
+      return matchesSearch && matchesTags && matchesSaved;
     })
     .sort((a, b) => {
       switch (filter.sortBy) {
@@ -198,7 +213,7 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         case 'oldest':
           return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
         case 'popular':
-          return (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0);
+          return (b.is_popular ? 1 : 0) - (a.is_popular ? 1 : 0);
         default:
           return 0;
       }
@@ -216,7 +231,13 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     currentPage,
     pageSize,
     filter,
-    setFilter: (newFilter) => setFilter(prev => ({ ...prev, ...newFilter })),
+    setFilter: (newFilter) => {
+      // Sync onlySaved with onlyFavorites for backend compatibility
+      if ('onlyFavorites' in newFilter) {
+        newFilter.onlyFavorites = newFilter.onlyFavorites;
+      }
+      setFilter(prev => ({ ...prev, ...newFilter }));
+    },
     availableTags,
     addCaption,
     deleteCaption,
