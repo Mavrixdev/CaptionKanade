@@ -159,6 +159,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('auth_token', data.data.token);
 
       try {
+        // @ts-ignore
         const [header, payload, signature] = data.data.token.split('.');
         if (!payload) {
           throw new Error('Định dạng token không hợp lệ');
