@@ -9,6 +9,7 @@ const EmailVerification: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [requested, setRequested] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { verifyAccount, submitOtp } = useAuth();
@@ -19,14 +20,17 @@ const EmailVerification: React.FC = () => {
       navigate('/register');
       return;
     }
-    // Request verification when component mounts
-    requestVerification();
-  }, [email, navigate]);
+    if (!requested) {
+      setRequested(true);
+      requestVerification();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email, navigate, requested]);
 
   const requestVerification = async () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
-      const initialToken = urlParams.get('token');
+      const initialToken = urlParams.get('token') || localStorage.getItem('auth_token');
       
       if (initialToken) {
         setToken(initialToken);

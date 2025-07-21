@@ -14,8 +14,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, turnstileToken?: string) => Promise<void>;
+  register: (email: string, password: string, turnstileToken?: string) => Promise<void>;
   logout: () => void;
   getAuthHeader: () => { Authorization: string } | {};
   token: string | null;
@@ -167,7 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, turnstileToken?: string) => {
     setLoading(true);
     try {
       const response = await fetch(`${API_URL}/v1/user/login`, {
@@ -175,7 +175,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, turnstile_token: turnstileToken })
       });
 
       const data = await response.json();
@@ -247,7 +247,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return data;
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, turnstileToken?: string) => {
     setLoading(true);
     try {
       const response = await fetch(`${API_URL}/v1/user/register`, {
@@ -255,7 +255,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, turnstile_token: turnstileToken })
       });
 
       if (!response.ok) {
@@ -337,6 +337,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const data = await response.json();
           throw new Error(data.detail || 'Lỗi xác thực OTP');
         }
+        
+        const data = await response.json();
+        if (data.status === "failed") {
+          throw new Error(data.message || 'Lỗi xác thực OTP');
+        }
+
       } catch (error) {
         throw error;
       } finally {

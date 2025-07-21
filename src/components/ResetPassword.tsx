@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Loader2, ArrowRight, KeyRound } from 'lucide-react';
+import Turnstile from 'react-turnstile';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ResetPassword: React.FC = () => {
@@ -10,12 +11,19 @@ const ResetPassword: React.FC = () => {
   const [step, setStep] = useState<'request' | 'verify'>('request');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const navigate = useNavigate();
+  const siteKey = import.meta.env.VITE_TURNSTILE_PUBLICKEY;
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+    if (!turnstileToken) {
+      setError('Vui lòng xác thực captcha.');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(`${API_URL}/v1/user/reset_password`, {
@@ -25,7 +33,7 @@ const ResetPassword: React.FC = () => {
         },
         body: JSON.stringify({ 
           email,
-          turnstile_token: null // Sẽ implement Turnstile sau
+          turnstile_token: turnstileToken
         }),
       });
       
@@ -55,6 +63,11 @@ const ResetPassword: React.FC = () => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+    if (!turnstileToken) {
+      setError('Vui lòng xác thực captcha.');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(`${API_URL}/v1/user/submit_reset_password`, {
@@ -66,7 +79,7 @@ const ResetPassword: React.FC = () => {
           email,
           otp: parseInt(otp),
           new_password: newPassword,
-          turnstile_token: null // Sẽ implement Turnstile sau
+          turnstile_token: turnstileToken
         }),
       });
 
@@ -128,6 +141,27 @@ const ResetPassword: React.FC = () => {
                 />
               </div>
             </div>
+
+            {step === 'request' && (
+              <div>
+                <Turnstile
+                  sitekey={siteKey}
+                  onSuccess={setTurnstileToken}
+                  onExpire={() => setTurnstileToken(null)}
+                  className="my-2 flex justify-center"
+                />
+              </div>
+            )}
+            {step === 'verify' && (
+              <div>
+                <Turnstile
+                  sitekey={siteKey}
+                  onSuccess={setTurnstileToken}
+                  onExpire={() => setTurnstileToken(null)}
+                  className="my-2 flex justify-center"
+                />
+              </div>
+            )}
 
             {step === 'verify' && (
               <>

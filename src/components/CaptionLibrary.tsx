@@ -307,9 +307,12 @@ const CaptionLibrary: React.FC = () => {
                   </div>
 
                   {/* Tags */}
-                  {caption.tags && caption.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {caption.tags.map(tag => (
+                  <div
+                    className="flex flex-wrap gap-1 mb-3"
+                    style={{ minHeight: '24px' }} // hoặc giá trị phù hợp với chiều cao 1 dòng tag
+                  >
+                    {caption.tags && caption.tags.length > 0 && (
+                      caption.tags.map(tag => (
                         <span
                           key={tag}
                           className="inline-flex items-center gap-1 px-2 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-full text-xs"
@@ -317,9 +320,9 @@ const CaptionLibrary: React.FC = () => {
                           <Tag size={10} />
                           {tag}
                         </span>
-                      ))}
-                    </div>
-                  )}
+                      ))
+                    )}
+                  </div>
 
                   {/* Meta info */}
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-4">

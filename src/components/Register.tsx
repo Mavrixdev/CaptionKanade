@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Mail, Lock, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import Turnstile from 'react-turnstile';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -11,8 +12,11 @@ const Register: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const navigate = useNavigate();
   const { register } = useAuth();
+
+  const siteKey = import.meta.env.VITE_TURNSTILE_PUBLICKEY;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,10 +28,15 @@ const Register: React.FC = () => {
       return;
     }
 
+    if (!turnstileToken) {
+      setError('Vui lòng xác thực captcha.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const response = await register(email, password);
+      const response = await register(email, password, turnstileToken);
       navigate('/verify-email', { state: { email } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng ký thất bại');
@@ -133,6 +142,14 @@ const Register: React.FC = () => {
                   )}
                 </button>
               </div>
+            </div>
+            <div>
+              <Turnstile
+                sitekey={siteKey}
+                onSuccess={setTurnstileToken}
+                onExpire={() => setTurnstileToken(null)}
+                className="my-2 flex justify-center"
+              />
             </div>
           </div>
 

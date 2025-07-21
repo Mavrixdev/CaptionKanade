@@ -16,8 +16,20 @@ const CaptionText = ({ value, onChange }: { value: string; onChange: (value: str
         Nội dung Caption
       </h3>
     </div>
+    <div className="flex items-center gap-2 mb-4">
+      <span
+        className={`text-sm ${
+          value.length === 36
+            ? 'text-red-500'
+            : 'text-gray-500 dark:text-gray-400'
+        }`}
+      >
+        {value.length}/36 ký tự
+      </span>
+    </div>
     <textarea
       value={value}
+      maxLength={36}
       onChange={(e) => onChange(e.target.value)}
       placeholder="Caption Kanade"
       className="w-full h-32 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
@@ -323,7 +335,7 @@ const Preview = React.memo(({
 ));
 
 const CaptionBuilder: React.FC = () => {
-  const { addCaption, user: captionUser, canUploadIcon, getRemainingQuota } = useCaptions();
+  const { addCaption, user: captionUser, canUploadIcon, getRemainingQuota, quota, fetchUserQuota } = useCaptions();
   const { user } = useAuth();
   const [captionText, setCaptionText] = useState('');
   const [selectedColor, setSelectedColor] = useState('#ffffff');
@@ -391,9 +403,21 @@ const CaptionBuilder: React.FC = () => {
     }
   };
 
+  // Kiểm tra quota
+  const remainingImageQuota = 40 - (quota.today_upload_count || 0);
+  const remainingIconQuota = 5 - (quota.icon_upload_count || 0);
+
+  // Gọi lại fetchUserQuota sau khi upload thành công
   const handleSaveCaption = async () => {
     if (!user) return;
-    
+    if (remainingImageQuota <= 0) {
+      toast.error('Bạn đã hết lượt upload caption hôm nay (40/40)');
+      return;
+    }
+    if (iconFile && remainingIconQuota <= 0) {
+      toast.error('Bạn đã hết lượt upload icon hôm nay (5/5)');
+      return;
+    }
     setIsSubmitting(true);
     try {
       const captionData: Omit<Caption, 'id' | 'created_at' | 'updated_at'> & { icon_file?: File } = {
@@ -401,17 +425,15 @@ const CaptionBuilder: React.FC = () => {
         tags: tags.length > 0 ? tags : null,
         author: user.id,
         type: iconFile ? 'image_icon' : 'background',
-        icon_url: '', // Required by Caption type
+        icon_url: '',
         icon_file: iconFile || undefined,
         color: selectedColor,
         colortop: selectedColorTop,
         colorbottom: selectedColorBottom,
         is_favorite: false
       };
-
       await addCaption(captionData);
       toast.success('Đã đăng caption thành công');
-
       // Reset form
       setCaptionText('');
       setTags([]);
@@ -420,9 +442,9 @@ const CaptionBuilder: React.FC = () => {
       setSelectedColor('#ffffff');
       setSelectedColorTop('#FFDEE9');
       setSelectedColorBottom('#B5FFFC');
-
       const event = new CustomEvent('caption-saved');
       window.dispatchEvent(event);
+      await fetchUserQuota(); // Cập nhật lại quota sau khi upload
     } catch (error) {
       console.error('Error saving caption:', error);
       toast.error('Có lỗi xảy ra khi lưu caption. Vui lòng thử lại.');
@@ -434,12 +456,16 @@ const CaptionBuilder: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
+        <h1 className="text-3xl font-bold dark:text-white to-purple-600 mb-2">
           Caption Builder
         </h1>
         <p className="dark:text-gray-300">
           Tạo caption đẹp mắt với gradient và icon tùy chỉnh
         </p>
+        {/* <div className="mt-2 flex gap-4 text-sm text-gray-700 dark:text-gray-300">
+          <span>Quota caption: <b>{remainingImageQuota}</b>/40</span>
+          <span>Quota icon: <b>{remainingIconQuota}</b>/5</span>
+        </div> */}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
@@ -458,7 +484,7 @@ const CaptionBuilder: React.FC = () => {
                 setIconFile(null);
                 setIconPreview('');
               }}
-              remainingQuota={getRemainingQuota()}
+              remainingQuota={remainingIconQuota}
             />
           )}
 
@@ -522,7 +548,7 @@ const CaptionBuilder: React.FC = () => {
           <div className="flex gap-4">
             <button
               onClick={handleSaveCaption}
-              disabled={!user?.is_verified || isSubmitting}
+              disabled={Boolean(!user || !user.is_verified || isSubmitting || remainingImageQuota <= 0 || (iconFile && remainingIconQuota <= 0))}
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-semibold hover:from-pink-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {!user?.is_verified ? (
@@ -535,6 +561,16 @@ const CaptionBuilder: React.FC = () => {
                   <Loader2 size={20} className="animate-spin" />
                   Đang đăng...
                 </>
+              ) : remainingImageQuota <= 0 ? (
+                <>
+                  <MdNearMeDisabled size={20} />
+                  Đã hết lượt upload caption hôm nay
+                </>
+              ) : iconFile && remainingIconQuota <= 0 ? (
+                <>
+                  <MdNearMeDisabled size={20} />
+                  Đã hết lượt upload icon hôm nay
+                </>
               ) : (
                 <>
                   <IoPaperPlane size={20} />
@@ -542,6 +578,17 @@ const CaptionBuilder: React.FC = () => {
                 </>
               )}
             </button>
+          </div>
+          <div className="flex justify-center items-center gap-2 text-sm text-gray-700 dark:text-gray-300 text-center">
+            <div
+              className="rounded-lg px-4 py-2 shadow-sm font-bold"
+              style={{
+                background: "linear-gradient(to right, #f9a8d4, #8b5cf6)",
+                color: "#374151"
+              }}
+            >
+              Bạn còn {remainingImageQuota} lượt upload caption hôm nay
+            </div>
           </div>
         </div>
       </div>

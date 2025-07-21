@@ -60,6 +60,8 @@ interface CaptionContextType {
   getRemainingQuota: () => number;
   searchCaptions: (query: string, page: number) => Promise<void>;
   clearSearch: () => void;
+  quota: UserQuota;
+  fetchUserQuota: () => Promise<void>;
 }
 
 const CaptionContext = createContext<CaptionContextType | undefined>(undefined);
@@ -71,6 +73,12 @@ export const useCaptions = () => {
   }
   return context;
 };
+
+interface UserQuota {
+  today_upload_count: number;
+  icon_upload_count: number;
+  posted_count: number;
+}
 
 export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [captions, setCaptions] = useState<Caption[]>([]);
@@ -91,9 +99,46 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     isMember: false,
     uploadQuota: 5
   });
+  const [quota, setQuota] = useState<UserQuota>({
+    today_upload_count: 0,
+    icon_upload_count: 0,
+    posted_count: 0,
+  });
 
   const location = useLocation();
   const { user: authUser } = useAuth();
+
+  // Fetch user quota from backend
+  const fetchUserQuota = useCallback(async () => {
+    if (!authUser) return;
+    try {
+      const response = await fetch(`${API_URL}/v1/member/get-upload-stat-today`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: authUser.id })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setQuota({
+          today_upload_count: data.today_upload_count ?? 0,
+          icon_upload_count: data.icon_upload_count ?? 0,
+          posted_count: data.posted_count ?? 0,
+        });
+      }
+    } catch (error) {
+      // Có thể log hoặc toast lỗi nếu cần
+    }
+  }, [authUser]);
+
+  // Gọi fetchUserQuota khi user login hoặc vào trang builder
+  useEffect(() => {
+    if (authUser) {
+      fetchUserQuota();
+    }
+  }, [authUser, fetchUserQuota]);
 
   // Fetch captions only when on library page and user is logged in
   useEffect(() => {
@@ -384,7 +429,9 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       canUploadIcon,
       getRemainingQuota,
       searchCaptions,
-      clearSearch
+      clearSearch,
+      quota,
+      fetchUserQuota
     }}>
       {children}
     </CaptionContext.Provider>
