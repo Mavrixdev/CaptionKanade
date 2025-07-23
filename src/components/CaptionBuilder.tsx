@@ -404,18 +404,18 @@ const CaptionBuilder: React.FC = () => {
   };
 
   // Kiểm tra quota
-  const remainingImageQuota = 40 - (quota.today_upload_count || 0);
-  const remainingIconQuota = 5 - (quota.icon_upload_count || 0);
+  const remainingImageQuota = 20 - (quota.today_upload_count || 0);
+  const remainingIconQuota = 7 - (quota.icon_upload_count || 0);
 
   // Gọi lại fetchUserQuota sau khi upload thành công
   const handleSaveCaption = async () => {
     if (!user) return;
     if (remainingImageQuota <= 0) {
-      toast.error('Bạn đã hết lượt upload caption hôm nay (40/40)');
+      toast.error('Bạn đã hết lượt upload caption hôm nay (20/20)');
       return;
     }
     if (iconFile && remainingIconQuota <= 0) {
-      toast.error('Bạn đã hết lượt upload icon hôm nay (5/5)');
+      toast.error('Bạn đã hết lượt upload icon hôm nay (7/7)');
       return;
     }
     setIsSubmitting(true);
