@@ -28,6 +28,18 @@ const Navigation = () => {
     }
   }, []);
 
+  useEffect(() => {
+    // Hiển thị thông báo khi người dùng truy cập vào trang
+      console.log(
+        "%cChờ chút",
+        "color: blue; font-size: 40px; font-weight: bold;"
+      )
+      console.log(
+    "%cNếu bạn muốn sử dụng api của CaptionKanade, hãy apply với admin tại discord: https://discord.chisadin.site để được cung cấp quyền truy cập api chính thống và documents",
+    "color: black; font-size: 18px; font-weight: bold; font-style: italic; background: #ffdcff;"
+    );
+  }, []);
+
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     if (!isDarkMode) {

@@ -457,7 +457,7 @@ const CaptionBuilder: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold dark:text-white to-purple-600 mb-2">
-          Caption Builder
+          Caption Studio
         </h1>
         <p className="dark:text-gray-300">
           Tạo caption đẹp mắt với gradient và icon tùy chỉnh
