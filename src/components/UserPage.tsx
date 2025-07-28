@@ -3,6 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Mail, Calendar, Hash, Clock, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 import { FaDev } from "react-icons/fa";
 import { FiDollarSign } from "react-icons/fi";
+import { FaCode } from "react-icons/fa6";
+import { TbLockQuestion } from "react-icons/tb";
 
 interface ExtendedUserInfo {
   email: string;
@@ -161,7 +163,7 @@ const UserPage: React.FC = () => {
                       <XCircle className="w-5 h-5 text-red-500" />
                     )}
                     <span className="text-gray-600 dark:text-gray-300">
-                      Account {userInfo.is_active ? 'Active' : 'Inactive'}
+                      Tài khoản {userInfo.is_active ? 'đang hoạt động' : 'vô hiệu hóa'}
                     </span>
                   </div>
 
@@ -172,7 +174,7 @@ const UserPage: React.FC = () => {
                       <XCircle className="w-5 h-5 text-red-500" />
                     )}
                     <span className="text-gray-600 dark:text-gray-300">
-                      Email {userInfo.is_verified ? 'Verified' : 'Not Verified'}
+                      Email {userInfo.is_verified ? 'Đã xác minh' : 'Chưa xác minh'}
                     </span>
                   </div>
 
@@ -183,8 +185,23 @@ const UserPage: React.FC = () => {
                       <FaDev className="w-5 h-5 text-gray-400" />
                     )}
                     <span className="text-gray-600 dark:text-gray-300">
-                      Developer Access: {userInfo.developer_access ? 'Enabled' : 'Disabled'}
+                      Developer Access: {userInfo.developer_access ? 'Kích hoạt' : 'Vô hiệu hóa'}
                     </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {userInfo.developer_access ? (<FaCode className=' w-5 h-5 text-blue-500'/>) : (<TbLockQuestion className='w-5 h-5 text-gray-400'/>)}
+                    {userInfo.developer_access ? (
+                      <a
+                        href={`https://devconsole.captionkanade.chisadin.site`}
+                        className="text-sm text-blue-500 hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Truy cập Dev Console
+                      </a> 
+                       ) :
+                      (<a href={`https://discord.chisadin.site`} className="text-sm text-blue-500">Xin quyền truy cập console</a>)
+                    }
                   </div>
                 </div>
               </div>
