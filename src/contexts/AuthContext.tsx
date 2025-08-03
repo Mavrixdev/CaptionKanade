@@ -286,7 +286,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('User not authenticated');
     }
     
-    const response = await fetch(`${API_URL}/v1/user/change_username`, {
+    const response = await fetch(`${API_URL}/v1/member/change_username`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
