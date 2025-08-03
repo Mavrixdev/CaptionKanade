@@ -5,7 +5,21 @@ import { FaDev } from "react-icons/fa";
 import { FiDollarSign } from "react-icons/fi";
 import { FaCode, FaThreads } from "react-icons/fa6";
 import { TbLockQuestion } from "react-icons/tb";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import toast from 'react-hot-toast';
 
 interface ExtendedUserInfo {
   email: string;
@@ -21,6 +35,69 @@ interface ExtendedUserInfo {
   favorites_received: number;
   created_at: string;
   updated_at: string;
+}
+
+const Change_UserName: React.FC = () => {
+  const AuthContext = useAuth();
+  const [username, setUsername] = useState(AuthContext.user?.username || '');
+  const [open, setOpen] = useState(false);
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username.trim() === '') {
+      alert('Tên người dùng không được để trống');
+      return;
+    }
+    if (username.length < 3 || username.length > 20) {
+      alert('Tên người dùng phải từ 3 đến 20 ký tự');
+      return;
+    }
+    AuthContext.setUsername(username)
+      .then(() => {
+        toast.success('Tên người dùng đã được cập nhật thành công, bạn có thể cân nhắc đăng xuất và đăng nhập lại để cập nhật tên người dùng mới');
+        setOpen(false);
+      })
+      .catch((error) => {
+        console.error('Error updating username:', error);
+        toast.error('Đã xảy ra lỗi khi cập nhật tên người dùng');
+      });
+
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <form>
+        <DialogTrigger asChild>
+          <Button variant={'outline'} className='ping-600'>Đổi tên người dùng</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Đổi tên người dùng</DialogTitle>
+            <DialogDescription>
+              Nhập tên người dùng mới của bạn. Tên người dùng sẽ được sử dụng để hiển thị trên các caption và hoạt động của bạn.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            <Label htmlFor="username">Tên người dùng</Label>
+            <Input
+              id="username"
+              type="text"
+              placeholder="Nhập tên người dùng mới"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button type="submit" onClick={handleSubmit}>Lưu</Button>
+            <DialogClose asChild>
+              <Button variant="outline">Hủy</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </form>
+    </Dialog>
+  );
+
 }
 
 const UserPage: React.FC = () => {
@@ -146,13 +223,16 @@ const UserPage: React.FC = () => {
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                       <FaThreads className="w-5 h-5 text-pink-500" />
                       <span>{userInfo.username || 'N/A'}</span>
+                      <Change_UserName />
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                       <FaThreads className="w-5 h-5 text-pink-500" />
-                      <span>N/A</span>
+                      Chưa có tên người dùng
+                      <Change_UserName />
                     </div>
                   )}
+                  
 
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                     <Hash className="w-5 h-5 text-pink-500" />
