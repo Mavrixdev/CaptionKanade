@@ -1,5 +1,76 @@
 import React from "react";
 import { Palette } from "lucide-react";
+import { Button } from "../ui/button";
+import toast from "react-hot-toast";
+
+type GradientPreset = {
+  top: string;
+  bottom: string;
+  name: string;
+};
+
+const randomHexColor = (): string => {
+  return (
+    "#" +
+    Math.floor(Math.random() * 0xffffff)
+      .toString(16)
+      .padStart(6, "0")
+      .toUpperCase()
+  );
+};
+
+const colorDistance = (c1: string, c2: string): number => {
+  const [r1, g1, b1] = c1.match(/\w\w/g)!.map((v) => parseInt(v, 16));
+  const [r2, g2, b2] = c2.match(/\w\w/g)!.map((v) => parseInt(v, 16));
+  return Math.sqrt(
+    (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
+  );
+};
+
+const randomName = (): string => {
+  const adjectives = [
+    "Pastel",
+    "Mint",
+    "Peach",
+    "Purple",
+    "Sunset",
+    "Warm",
+    "Nature",
+    "Pink",
+    "Ocean",
+    "Golden",
+  ];
+  const nouns = [
+    "Dream",
+    "Rose",
+    "Blossom",
+    "Sky",
+    "Cloud",
+    "Coral",
+    "Fresh",
+    "Passion",
+    "Mist",
+    "Glow",
+  ];
+  return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${
+    nouns[Math.floor(Math.random() * nouns.length)]
+  }`;
+};
+
+export const generateGradients = (count: number): GradientPreset[] => {
+  const presets: GradientPreset[] = [];
+  while (presets.length < count) {
+    const top = randomHexColor();
+    let bottom = randomHexColor();
+    while (colorDistance(top, bottom) < 100) {
+      bottom = randomHexColor();
+    }
+    presets.push({ top, bottom, name: randomName() });
+  }
+  return presets;
+};
+
+
 
 export const StyleOptions = React.memo(({ 
   selectedColor,
@@ -22,6 +93,13 @@ export const StyleOptions = React.memo(({
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
         Tùy chỉnh giao diện
       </h3>
+      <Button className="bg-gradient-to-br from-pink-200 to-blue-300 text-black font-comic" onClick={() => {
+          const new_gradien = generateGradients(1)[0]
+          onGradientChange(new_gradien.top, new_gradien.bottom)       
+        toast.success(`Đã tạo một màu mới - ${new_gradien.name}!`)
+      }}>
+        Random một màu mới
+      </Button>
     </div>
     
     <div className="space-y-4">
