@@ -40,8 +40,8 @@ const CaptionBuilder: React.FC = () => {
   ];
 
   const handleIconUpload = async (file: File) => {
-    if (file.size > 1000000) {
-      toast.error('Kích thước file phải nhỏ hơn 1MB');
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error('Kích thước file phải nhỏ hơn 3MB');
       return;
     }
 
