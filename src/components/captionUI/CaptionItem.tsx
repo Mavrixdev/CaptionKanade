@@ -1,9 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 import { Calendar, Heart, Tag, Trash2, Sparkles, TrendingUp } from "lucide-react";
 import { FaHeart } from "react-icons/fa6";
+import { FaHashtag } from "react-icons/fa";
 
 import { Badge } from "../ui/badge";
 import { Caption } from "@/types/Caption";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import toast from "react-hot-toast";
 
 interface CaptionProps {
   caption: Caption;
@@ -12,14 +15,29 @@ interface CaptionProps {
   handleDelete: (id: string) => void;
 }
 
+
+
 export const CaptionItem: React.FC<CaptionProps> = ({ 
   caption, 
   user, 
   toggleFavorite, 
   handleDelete 
 }) => {
+  const [open, setOpen] = useState(false);
+
+  const handleCopy = () => {
+  try {
+    navigator.clipboard.writeText(caption.id) 
+    toast.success("Đã copy id của caption này vào clipboad")
+  } catch (error) {
+    toast.error("Lỗi khi copy vào clipboard")
+  }
+}
   return (
-    <div className="group relative bg-white dark:bg-gray-900 rounded-3xl shadow-sm hover:shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1">
+    <>
+    <div className="group relative bg-white dark:bg-gray-900 rounded-3xl shadow-sm hover:shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1"
+      
+    >
       
       {/* Popular Badge */}
       {caption.is_popular && (
@@ -32,7 +50,7 @@ export const CaptionItem: React.FC<CaptionProps> = ({
       )}
 
       {/* Header with gradient preview */}
-      <div className="relative h-32 overflow-hidden">
+      <div className="relative h-32 overflow-hidden" onClick={() => setOpen(!open)}>
         {/* <div 
           className="absolute inset-0"
           style={{
@@ -157,5 +175,70 @@ export const CaptionItem: React.FC<CaptionProps> = ({
       {/* Subtle hover effect overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl" />
     </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <DialogHeader className="p-6 border-b">
+            <DialogTitle className="text-lg font-bold">{caption.text}</DialogTitle>
+          </DialogHeader>
+          <div className="p-6 space-y-4">
+            {/* Preview lớn */}
+            <div
+              className="w-full h-64 rounded-2xl flex items-center justify-center"
+            >
+              <div 
+              className="flex items-center gap-3 px-6 py-5 rounded-2xl max-w-full backdrop-blur-sm"
+              style={{
+                background: `linear-gradient(to bottom, ${caption.colortop}, ${caption.colorbottom})`,
+                color: caption.color,
+                border: '2px solid rgba(255,255,255,0.3)'
+              }}
+              >
+                {caption.icon_url && (
+                  <img 
+                    src={caption.icon_url} 
+                    alt="Icon" 
+                    className="w-5 h-5 rounded-full object-cover flex-shrink-0" 
+                  />
+                )}
+                <span 
+                  className="text-sm font-bold truncate max-w-48"
+                  style={{ color: caption.color }}
+                >
+                  {caption.text.length > 40 ? `${caption.text.substring(0, 40)}...` : caption.text}
+                </span>
+              </div>
+            </div>
+
+            {/* Meta info */}
+            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+              <span>
+                <Calendar size={14} className="inline mr-1" />
+                {new Date(caption.created_at).toLocaleDateString("vi-VN")}
+              </span>
+              <button onClick={handleCopy}>
+                <FaHashtag size={14} className="inline mr-1" />
+                {caption.id}
+              </button>
+              <span className="inline">
+                ❤️ {caption.favorite_count}
+              </span>
+            </div>
+
+            {/* Tags */}
+            {caption.tags && caption.tags?.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {caption.tags?.map(tag => (
+                  <Badge key={tag} className="bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400">
+                    #{tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
+
+
