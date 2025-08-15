@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Home, Edit3, BookOpen, Moon, Sun, LogOut } from 'lucide-react';
+import { Menu, Home, Edit3, BookOpen, Moon, Sun, LogOut, HelpCircle } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import CaptionBuilder from './components/CaptionBuilder';
 import CaptionLibrary from './components/CaptionLibrary';
+import Tutorial from './components/Tutorial';
 import Login from './components/Login';
 import Register from './components/Register';
 import UserPage from './components/UserPage';
@@ -54,6 +55,7 @@ const SidebarContent: React.FC = () => {
     { id: '/', label: 'Home', icon: Home },
     { id: '/builder', label: 'Caption Studio', icon: Edit3 },
     { id: '/library', label: 'Library', icon: BookOpen },
+    { id: '/tutorial', label: 'Hướng dẫn', icon: HelpCircle },
   ];
 
   const getUserInitials = (user: any) => {
@@ -325,6 +327,12 @@ const App: React.FC = () => {
               <Route path="/library" element={
                 <ProtectedRoute>
                   <CaptionLibrary />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/tutorial" element={
+                <ProtectedRoute>
+                  <Tutorial />
                 </ProtectedRoute>
               } />
               

@@ -176,6 +176,20 @@ const CaptionLibrary: React.FC = () => {
         )}
       </div>
 
+      <div className="text-center mb-4 px-2 text-base md:text-lg leading-relaxed">
+        <span>
+          Chưa biết lấy ID bài viết ở đâu? <br className="block md:hidden" />
+          Truy cập trang hướng dẫn ở sidebar hoặc&nbsp;
+          <a
+            href="/tutorial"
+            className="underline text-pink-600 hover:text-pink-800 transition-colors"
+            style={{ cursor: 'pointer' }}
+          >
+            Vào đây
+          </a>
+        </span>
+      </div>
+
       {/* Loading State */}
       {isLoading && (
         <div className="text-center py-12">
