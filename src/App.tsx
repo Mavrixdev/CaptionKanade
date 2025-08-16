@@ -28,7 +28,7 @@ interface NavigationItem {
   icon: any;
 }
 
-const SidebarContent: React.FC = () => {
+const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -94,7 +94,7 @@ const SidebarContent: React.FC = () => {
               )}
               asChild
             >
-              <Link to={id}>
+              <Link to={id} onClick={onNavigate}>
                 <Icon className="mr-3 h-5 w-5" />
                 {label}
               </Link>
@@ -111,7 +111,7 @@ const SidebarContent: React.FC = () => {
         {user ? (
           <div className="space-y-2">
             <Button variant="ghost" className="w-full justify-start h-auto p-3" asChild>
-              <Link to="/profile">
+              <Link to="/profile" onClick={onNavigate}>
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/avatar.png" />
@@ -151,7 +151,7 @@ const SidebarContent: React.FC = () => {
           </div>
         ) : (
           <Button className="w-full bg-pink-500 hover:bg-pink-600" asChild>
-            <Link to="/login">Login</Link>
+            <Link to="/login" onClick={onNavigate}>Login</Link>
           </Button>
         )}
 
@@ -191,6 +191,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     return null;
   }
 
+  // Function để đóng sidebar trên mobile
+  const handleMobileNavigate = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -201,7 +206,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       {/* Mobile Sidebar */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent side="left" className="p-0 w-64">
-          <SidebarContent />
+          <SidebarContent onNavigate={handleMobileNavigate} />
         </SheetContent>
       </Sheet>
     </>
