@@ -62,7 +62,7 @@ export const CaptionItem: React.FC<CaptionProps> = ({
         <div className="absolute inset-0 flex items-center justify-center p-6 lg:p-8">
           <div 
             className="
-              flex items-center gap-3 px-4 py-2 rounded-2xl max-w-full backdrop-blur-sm
+              flex items-center gap-3 px-4 py-2 rounded-full max-w-full backdrop-blur-sm
               lg:px-6 lg:py-3 lg:gap-5
               transition-all duration-300
             "
@@ -191,16 +191,16 @@ export const CaptionItem: React.FC<CaptionProps> = ({
           <div className="p-6 space-y-4">
             {/* Preview lớn */}
             <div
-              className="w-full h-64 rounded-2xl flex items-center justify-center"
+              className="w-full h-64 rounded-3xl flex items-center justify-center"
             >
               <div 
                 className="
                   flex items-center gap-3 
-                  px-6 py-3 
+                  px-6 py-2.5 
                   rounded-3xl max-w-full 
                   backdrop-blur-sm
-                  sm:px-10 sm:py-5 sm:gap-6
-                  sm:min-h-[80px]
+                  sm:px-9 sm:py-4.5 sm:gap-[21.6px]
+                  sm:min-h-[72px]
                 "
                 style={{
                   background: `linear-gradient(to bottom, ${caption.colortop}, ${caption.colorbottom})`,
@@ -216,7 +216,7 @@ export const CaptionItem: React.FC<CaptionProps> = ({
                   />
                 )}
                 <span 
-                  className="text-sm sm:text-xl font-bold truncate max-w-48 sm:max-w-xs"
+                  className="text-md sm:text-xl font-bold truncate max-w-48 sm:max-w-xs"
                   style={{ color: caption.color }}
                 >
                   {caption.text.length > 40 ? `${caption.text.substring(0, 40)}...` : caption.text}
