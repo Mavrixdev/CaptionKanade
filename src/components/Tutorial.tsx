@@ -53,7 +53,7 @@ const Tutorial: React.FC = () => {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
               Mẹo nhanh
             </h2>
-            <div className='text-gray-600 dark:text-gray-300 text-center'>Chưa có gì mới</div>
+            <img src="/haysuynghinhumotkisu.png" alt="idk" className='w-full h-auto rounded-lg' />
           </div>
         </section>
 
