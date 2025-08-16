@@ -71,6 +71,13 @@ const Tutorial: React.FC = () => {
           <img src="/Tut2.png" alt="ID bài viết" className='w-full h-auto rounded-lg' />
         </section>
 
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Các phần tử của trang Caption Studio
+          </h2>
+          <img src="/Tut3.png" alt="Tạo caption" className='w-full h-auto rounded-lg' />
+        </section>
+
         <footer className="text-center text-sm text-gray-600 dark:text-gray-300">
           Bạn có thể bắt đầu tạo caption thật tại phần "Caption Studio".
         </footer>
