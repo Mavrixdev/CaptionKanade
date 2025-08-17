@@ -43,6 +43,9 @@ const Login: React.FC = () => {
           <p className="text-center text-gray-600 dark:text-gray-300">
             Đăng nhập để truy cập caption của bạn
           </p>
+          <p className="text-center text-red-600 dark:text-red-300">
+            Lưu ý: Đừng dùng acc locket login
+          </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
