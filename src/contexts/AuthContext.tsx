@@ -1,4 +1,6 @@
+import { LogOutIcon } from 'lucide-react';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -275,10 +277,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (success) {
           scheduleTokenRefresh(savedToken);
         } else {
+          toast.error("Làm mới session thất bại, vui lòng đăng nhập lại")
           clearAuthState();
         }
       } else if (savedToken) {
-        // Token exists but is expired
+        // Token exists but is expired 
+        // mất dạy
+        toast.error("Phiên đã hết hạn, vui lòng đăng nhập lại", {
+          icon: <LogOutIcon />,
+          duration: 4000,
+          style: {
+            borderRadius: "12px",
+            background: "#fff1f2",
+            color: "#b91c1c",
+            fontWeight: 500,
+          },
+          iconTheme: {
+            primary: "#ef4444",
+            secondary: "#fff",
+          },
+        })
         TokenManager.removeToken();
       }
       
