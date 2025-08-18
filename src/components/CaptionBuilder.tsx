@@ -191,7 +191,7 @@ const CaptionBuilder: React.FC = () => {
             />
           )}
 
-          {captionUser.isMember && !iconUrl && (remainingIconQuota > 0) && (
+          {!captionUser.isMember && !iconUrl && (remainingIconQuota > 0) && (
             <IconUpload
             iconFile={iconFile}
             iconPreview={iconPreview}
@@ -206,7 +206,7 @@ const CaptionBuilder: React.FC = () => {
             )}
 
           {/* Non-member notice */}
-          {!captionUser.isMember && (
+          {captionUser.isMember && (
             <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-6 border border-yellow-200 dark:border-yellow-700">
               <div className="flex items-center gap-2 mb-2">
                 <Crown className="text-yellow-500" size={20} />
