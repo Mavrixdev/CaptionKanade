@@ -150,9 +150,14 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
             </Button>
           </div>
         ) : (
-          <Button className="w-full bg-pink-500 hover:bg-pink-600" asChild>
-            <Link to="/login" onClick={onNavigate}>Login</Link>
-          </Button>
+          <div className="space-y-2">
+            <Button className="w-full bg-pink-500 hover:bg-pink-600" asChild>
+              <Link to="/login" onClick={onNavigate}>Đăng nhập</Link>
+            </Button>
+            <Button variant="outline" className="w-full" asChild>
+              <Link to="/register" onClick={onNavigate}>Đăng ký</Link>
+            </Button>
+          </div>
         )}
 
         {/* Theme Toggle */}
@@ -326,27 +331,21 @@ const App: React.FC = () => {
               <Route path="/reset-password" element={<ResetPassword />} />
               
               <Route path="/" element={
-                <ProtectedRoute>
                   <HomePage />
-                </ProtectedRoute>
               } />
               
               <Route path="/builder" element={
-                <ProtectedRoute>
+                <ProtectedRoute requireVerified>
                   <CaptionBuilder />
                 </ProtectedRoute>
               } />
               
               <Route path="/library" element={
-                <ProtectedRoute>
                   <CaptionLibrary />
-                </ProtectedRoute>
               } />
               
               <Route path="/tutorial" element={
-                <ProtectedRoute>
                   <Tutorial />
-                </ProtectedRoute>
               } />
               
               <Route path="/profile" element={

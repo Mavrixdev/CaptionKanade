@@ -104,9 +104,10 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     icon_upload_count: 0,
     posted_count: 0,
   });
+  const [localFavorites, setLocalFavorites] = useState<Set<string>>(new Set());
 
   const location = useLocation();
-  const { user: authUser } = useAuth();
+  const { user: authUser, token, getAuthHeader } = useAuth();
 
   // Fetch user quota from backend
   const fetchUserQuota = useCallback(async () => {
@@ -129,9 +130,26 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         });
       }
     } catch (error) {
-      // Có thể log hoặc toast lỗi nếu cần
+      // optional logging
     }
   }, [authUser]);
+
+  // Load local favorites on mount for no-auth users
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('local_favorites');
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      setLocalFavorites(new Set(Array.isArray(list) ? list : []));
+    } catch {
+      setLocalFavorites(new Set());
+    }
+  }, []);
+
+  const persistLocalFavorites = useCallback((favSet: Set<string>) => {
+    try {
+      localStorage.setItem('local_favorites', JSON.stringify(Array.from(favSet)));
+    } catch {}
+  }, []);
 
   // Gọi fetchUserQuota khi user login hoặc vào trang builder
   useEffect(() => {
@@ -140,26 +158,27 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [authUser, fetchUserQuota]);
 
-  // Fetch captions only when on library page and user is logged in
+  // Fetch captions when on library page (public access allowed)
   useEffect(() => {
-    if (location.pathname === '/library' && authUser) {
+    if (location.pathname === '/library') {
       fetchCaptions(1);
     }
-  }, [location.pathname, authUser]);
+  }, [location.pathname]);
 
   const fetchCaptions = async (page: number) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_URL}/captions/${page}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        }
-      });
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const response = await fetch(`${API_URL}/captions/${page}`, { headers });
       if (response.ok) {
         const data: PaginatedResponse = await response.json();
         const newCaptions = data.captions.map(caption => ({
           ...caption,
+          is_favorite: authUser ? caption.is_favorite : localFavorites.has(caption.id)
         }));
         setCaptions(newCaptions);
         // Cache kết quả fetch
@@ -249,15 +268,32 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const toggleFavorite = useCallback(async (id: string) => {
     try {
-      const isFavorited = captions.find(caption => caption.id === id)?.is_favorite || false;
+      const current = captions.find(caption => caption.id === id);
+      const isFavorited = current?.is_favorite || false;
+
+      // No-auth: toggle locally and skip API; do not change favorite_count
+      if (!authUser || !token) {
+        const nextSet = new Set(localFavorites);
+        if (isFavorited) {
+          nextSet.delete(id);
+        } else {
+          nextSet.add(id);
+        }
+        setLocalFavorites(nextSet);
+        persistLocalFavorites(nextSet);
+        setCaptions(prev => prev.map(caption => caption.id === id ? { ...caption, is_favorite: !isFavorited } : caption));
+        return;
+      }
+
+      // Authenticated: optimistic update including favorite_count
       setCaptions(prev => prev.map(caption => caption.id === id ? { ...caption, is_favorite: !isFavorited, favorite_count: !isFavorited 
-                                                                                                                  ? (caption.favorite_count || 0) + 1 
-                                                                                                                  : Math.max(0, (caption.favorite_count || 0) - 1) } : caption));
+        ? (caption.favorite_count || 0) + 1 
+        : Math.max(0, (caption.favorite_count || 0) - 1) } : caption));
       const endpoint = isFavorited ? '/v1/member/unfavorite-post' : '/v1/member/add-favorite-post';
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -267,12 +303,13 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       });
 
       if (!response.ok) {
-        setCaptions(prev => prev.map(caption => caption.id === id ? { ...caption, is_favorite: !isFavorited } : caption));
+        // Revert
+        setCaptions(prev => prev.map(caption => caption.id === id ? { ...caption, is_favorite: isFavorited, favorite_count: current?.favorite_count || 0 } : caption));
       } 
     } catch (error) {
       console.error('Error toggling saved status:', error);
     }
-  }, [captions, authUser]);
+  }, [captions, authUser, token, localFavorites, persistLocalFavorites]);
 
   // Debounced version of toggleFavorite that returns a Promise
   const debouncedToggleFavorite = useCallback(
@@ -343,19 +380,17 @@ export const CaptionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       const response = await fetch(`${API_URL}/captions/search/${page}`, {
         method: 'POST',
-        headers: {
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        query: query
-      }),
-      signal: AbortController.signal
+        headers: getAuthHeader() as any,
+        body: JSON.stringify({
+          query: query
+        }),
+        signal: AbortController.signal
       });
       if (response.ok) {
         const data: PaginatedResponse = await response.json();
         setCaptions(data.captions.map(caption => ({
           ...caption,
+          is_favorite: authUser ? caption.is_favorite : localFavorites.has(caption.id)
         })));
         setTotalCaptions(data.total);
         setCurrentPage(data.page);
