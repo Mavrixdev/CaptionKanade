@@ -10,6 +10,8 @@ import Register from './components/Register';
 import UserPage from './components/UserPage';
 import EmailVerification from './components/EmailVerification';
 import ResetPassword from './components/ResetPassword';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
 import { CaptionProvider } from './contexts/CaptionContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -353,6 +355,9 @@ const App: React.FC = () => {
                   <UserPage />
                 </ProtectedRoute>
               } />
+              
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
             </Routes>
           </Layout>
         </CaptionProvider>

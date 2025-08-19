@@ -1,6 +1,7 @@
 import { LogOutIcon } from 'lucide-react';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
+import { GoogleAuthService } from '../services/googleAuthService';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -29,6 +30,7 @@ interface AuthContextType {
   verifyAccount: (token: string) => Promise<void>;
   submitOtp: (token: string, otp: number) => Promise<void>;
   getUserInfo: () => Promise<User | null>;
+  googleauth: (token: string) => Promise<void>
   userInfo: User | null;
 }
 
@@ -351,6 +353,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const googleauth = async (accesstoken: string) => {
+    setLoading(true);
+    try {
+      // Validate Google token trước khi gửi lên server
+      const isValidToken = await GoogleAuthService.validateGoogleToken(accesstoken);
+      if (!isValidToken) {
+        throw new Error('invalid_token');
+      }
+
+      const response = await GoogleAuthService.authenticateWithGoogle(accesstoken);
+      
+      const success = updateUserFromToken(response.data.token);
+      if (!success) {
+        throw new Error('Token trả về từ server không hợp lệ');
+      }
+
+      scheduleTokenRefresh(response.data.token);
+
+    } catch (error) {
+      // Re-throw error để component có thể xử lý
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const register = async (email: string, password: string, turnstileToken?: string) => {
     setLoading(true);
     try {
@@ -518,6 +546,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     userInfo,
     verifyAccount,
     submitOtp,
+    googleauth
   };
 
   return (

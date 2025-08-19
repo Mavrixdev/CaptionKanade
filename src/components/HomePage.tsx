@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Badge } from './ui/badge';
 
 const HomePage: React.FC = () => {
@@ -122,6 +122,32 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-t border-pink-200 dark:border-gray-600 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <Link 
+                to="/privacy" 
+                className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+              >
+                Chính sách bảo mật
+              </Link>
+              <span className="hidden sm:inline">•</span>
+              <Link 
+                to="/terms" 
+                className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+              >
+                Điều khoản dịch vụ
+              </Link>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400">
+              © {new Date().getFullYear()} CaptionKanade. Tất cả quyền được bảo lưu.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

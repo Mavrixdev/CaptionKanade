@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleLoginSection } from './SystemComponent/GoogleLoginSection';
+import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,8 +12,8 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const { googleLogin, isGoogleLoading } = useGoogleAuth();
   const navigate = useNavigate();
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +127,7 @@ const Login: React.FC = () => {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || isGoogleLoading}
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isLoading ? (
@@ -137,7 +139,33 @@ const Login: React.FC = () => {
               </>
             )}
           </button>
+
+          {/* Google Login Section */}
+          <GoogleLoginSection
+            onGoogleLogin={googleLogin}
+            isGoogleLoading={isGoogleLoading}
+            disabled={isLoading}
+          />
         </form>
+
+        {/* Footer Links */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-500 dark:text-gray-400">
+            <Link 
+              to="/privacy" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Chính sách bảo mật
+            </Link>
+            <span className="hidden sm:inline">•</span>
+            <Link 
+              to="/terms" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Điều khoản dịch vụ
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

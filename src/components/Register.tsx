@@ -3,6 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Mail, Lock, Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import Turnstile from 'react-turnstile';
+import { GoogleLoginSection } from './SystemComponent/GoogleLoginSection';
+import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,6 +17,7 @@ const Register: React.FC = () => {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { googleLogin, isGoogleLoading } = useGoogleAuth();
 
   const siteKey = import.meta.env.VITE_TURNSTILE_PUBLICKEY;
 
@@ -143,6 +146,7 @@ const Register: React.FC = () => {
                 </button>
               </div>
             </div>
+            
             <div>
               <Turnstile
                 sitekey={siteKey}
@@ -152,6 +156,13 @@ const Register: React.FC = () => {
               />
             </div>
           </div>
+
+          {/* Google Login Section */}
+          <GoogleLoginSection
+            onGoogleLogin={googleLogin}
+            isGoogleLoading={isGoogleLoading}
+            disabled={isLoading}
+          />
 
           {error && (
             <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm">
@@ -172,7 +183,7 @@ const Register: React.FC = () => {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || isGoogleLoading}
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isLoading ? (
@@ -185,6 +196,28 @@ const Register: React.FC = () => {
             )}
           </button>
         </form>
+
+        {/* Footer Links */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-500 dark:text-gray-400">
+            <Link 
+              to="/privacy" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Chính sách bảo mật
+            </Link>
+            <span className="hidden sm:inline">•</span>
+            <Link 
+              to="/terms" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Điều khoản dịch vụ
+            </Link>
+          </div>
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
+            Bằng việc đăng ký, bạn đồng ý với <Link to="/terms" className="underline hover:text-pink-500">Điều khoản dịch vụ</Link> và <Link to="/privacy" className="underline hover:text-pink-500">Chính sách bảo mật</Link> của chúng tôi.
+          </p>
+        </div>
       </div>
     </div>
   );
