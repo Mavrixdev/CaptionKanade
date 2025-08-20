@@ -46,7 +46,7 @@ const Login: React.FC = () => {
             Đăng nhập để truy cập caption của bạn
           </p>
           <p className="text-center text-red-600 dark:text-red-300">
-            Lưu ý: Đừng dùng acc locket login
+            Đây là web ứng dụng riêng với locket nên bạn vẫn cần tạo tk khi chưa có🌹💃🔥🌺💐🌼
           </p>
         </div>
 
