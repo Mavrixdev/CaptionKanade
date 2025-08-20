@@ -12,25 +12,21 @@ const EmailVerification: React.FC = () => {
   const [requested, setRequested] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { verifyAccount, submitOtp } = useAuth();
+  const { verifyAccount, submitOtp, user } = useAuth();
   const email = location.state?.email;
 
   useEffect(() => {
-    if (!email) {
-      navigate('/register');
-      return;
-    }
     if (!requested) {
       setRequested(true);
       requestVerification();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email, navigate, requested]);
+  }, [requested]);
 
   const requestVerification = async () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
-      const initialToken = urlParams.get('token') || localStorage.getItem('auth_token');
+      const initialToken = urlParams.get('token') || localStorage.getItem('access_token');
       
       if (initialToken) {
         setToken(initialToken);
@@ -97,6 +93,8 @@ const EmailVerification: React.FC = () => {
     );
   }
 
+  const displayEmail = (email as string | undefined) || user?.email || '';
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 px-4">
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-pink-100 dark:border-gray-700">
@@ -107,10 +105,16 @@ const EmailVerification: React.FC = () => {
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900 dark:text-white">
             Verify your email
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
-            We've sent a verification code to{' '}
-            <span className="font-medium text-pink-600 dark:text-pink-400">{email}</span>
-          </p>
+          {displayEmail ? (
+            <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
+              We've sent a verification code to{' '}
+              <span className="font-medium text-pink-600 dark:text-pink-400">{displayEmail}</span>
+            </p>
+          ) : (
+            <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
+              Enter the verification code sent to your email.
+            </p>
+          )}
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
