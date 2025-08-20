@@ -5,7 +5,7 @@ import { GoogleAuthService } from '../services/googleAuthService';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface User {
+export interface User {
   id: string;
   email: string;
   username: string;

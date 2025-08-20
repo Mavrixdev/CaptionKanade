@@ -5,12 +5,13 @@ import { FaHashtag } from "react-icons/fa";
 
 import { Badge } from "../ui/badge";
 import { Caption } from "@/types/Caption";
+import {User} from "@/contexts/AuthContext"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import toast from "react-hot-toast";
 
 interface CaptionProps {
   caption: Caption;
-  user: any;
+  user: User;
   toggleFavorite: (id: string) => void;
   handleDelete: (id: string) => void;
 }
@@ -146,7 +147,7 @@ export const CaptionItem: React.FC<CaptionProps> = ({
 
           {/* Right side - Actions */}
           <div className="flex items-center gap-2">
-            {user && (
+            {user && user?.is_verified && (
               <button
                 onClick={() => toggleFavorite(caption.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
