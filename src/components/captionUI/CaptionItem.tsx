@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 
 interface CaptionProps {
   caption: Caption;
-  user: User;
+  user: User | null;
   toggleFavorite: (id: string) => void;
   handleDelete: (id: string) => void;
 }
