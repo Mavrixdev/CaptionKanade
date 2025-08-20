@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCaptions } from '../contexts/CaptionContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -47,6 +47,69 @@ const CaptionLibrary: React.FC = () => {
       fetchCaptions(pageNumber);
     }
   };
+
+  // Responsive: số lượng nút trang hiển thị theo viewport
+  const [maxVisiblePages, setMaxVisiblePages] = useState(5);
+
+  useEffect(() => {
+    const updateMaxVisiblePages = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setMaxVisiblePages(3); // mobile
+      } else if (width < 1024) {
+        setMaxVisiblePages(5); // tablet
+      } else {
+        setMaxVisiblePages(7); // desktop
+      }
+    };
+    updateMaxVisiblePages();
+    window.addEventListener('resize', updateMaxVisiblePages);
+    return () => window.removeEventListener('resize', updateMaxVisiblePages);
+  }, []);
+
+  // Tạo danh sách các item phân trang (số trang và dấu …)
+  const getPaginationItems = (
+    current: number,
+    total: number,
+    maxLength: number
+  ): (number | 'ellipsis')[] => {
+    if (total <= maxLength) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    const items: (number | 'ellipsis')[] = [];
+    const half = Math.floor(maxLength / 2);
+    let start = Math.max(1, current - half);
+    let end = Math.min(total, current + half);
+
+    // Điều chỉnh để luôn đủ maxLength khi có thể
+    if (end - start + 1 < maxLength) {
+      if (start === 1) {
+        end = Math.min(total, start + maxLength - 1);
+      } else if (end === total) {
+        start = Math.max(1, end - maxLength - 1 + 2); // +2 để bù biên
+      }
+    }
+
+    if (start > 1) {
+      items.push(1);
+      if (start > 2) items.push('ellipsis');
+    }
+
+    for (let i = start; i <= end; i++) items.push(i);
+
+    if (end < total) {
+      if (end < total - 1) items.push('ellipsis');
+      items.push(total);
+    }
+
+    return items;
+  };
+
+  const paginationItems = useMemo(
+    () => getPaginationItems(currentPage, totalPages, Math.min(maxVisiblePages, totalPages)),
+    [currentPage, totalPages, maxVisiblePages]
+  );
 
   const handleSearch = () => {
     setFilter({ searchQuery: searchInput });
@@ -308,19 +371,28 @@ const CaptionLibrary: React.FC = () => {
                 <ChevronLeft size={20} />
               </button>
               
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNumber => (
-                <button
-                  key={pageNumber}
-                  onClick={() => handlePageChange(pageNumber)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    pageNumber === currentPage
-                      ? 'bg-pink-500 text-white'
-                      : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {pageNumber}
-                </button>
-              ))}
+              {paginationItems.map((item, index) =>
+                item === 'ellipsis' ? (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="px-3 py-2 text-gray-500 dark:text-gray-400 select-none"
+                  >
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={item}
+                    onClick={() => handlePageChange(item)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      item === currentPage
+                        ? 'bg-pink-500 text-white'
+                        : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                )
+              )}
 
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
