@@ -146,7 +146,7 @@ const UserPage: React.FC = () => {
   const [tab, settab] = useState("posted")
 
   const getLocalUserInfo = (): ExtendedUserInfo | null => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('access_token');
     if (!token) return null;
 
     try {
