@@ -148,7 +148,7 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
               onClick={logout}
             >
               <LogOut className="mr-3 h-4 w-4" />
-              Logout
+              Đăng xuất
             </Button>
           </div>
         ) : (
