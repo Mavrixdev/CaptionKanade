@@ -156,13 +156,13 @@ const CaptionBuilder: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold dark:text-white to-purple-600 mb-2">
+      <div className="mb-4 sm:mb-6 md:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold dark:text-white to-purple-600 mb-2">
           Caption Studio
         </h1>
-        <p className="dark:text-gray-300">
+        <p className="text-sm sm:text-base dark:text-gray-300">
           Tạo caption đẹp mắt với gradient và icon tùy chỉnh
         </p>
         {/* <div className="mt-2 flex gap-4 text-sm text-gray-700 dark:text-gray-300">
@@ -171,9 +171,9 @@ const CaptionBuilder: React.FC = () => {
           </div> */}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
         {/* Editor Panel */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <CaptionText value={captionText} onChange={setCaptionText} />
 
           {/* Icon Upload - Only for Members */}
@@ -207,14 +207,14 @@ const CaptionBuilder: React.FC = () => {
 
           {/* Non-member notice */}
           {captionUser.isMember && (
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-6 border border-yellow-200 dark:border-yellow-700">
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-yellow-200 dark:border-yellow-700">
               <div className="flex items-center gap-2 mb-2">
-                <Crown className="text-yellow-500" size={20} />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <Crown className="text-yellow-500" size={18} />
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                   Đang bảo trì 
                 </h3>
               </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">
                 Icon upload đang bảo trì, hãy dùng url upload nhé.
               </p>
             </div>
@@ -247,7 +247,7 @@ const CaptionBuilder: React.FC = () => {
         </div>
 
         {/* Preview Panel */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Preview
             showPreview={showPreview}
             onTogglePreview={() => setShowPreview(!showPreview)}
@@ -259,49 +259,55 @@ const CaptionBuilder: React.FC = () => {
             />
 
           {/* Actions */}
-          <div className="flex gap-4">
+          <div className="flex gap-3 sm:gap-4">
             <button
               onClick={handleSaveCaption}
               disabled={Boolean(!user || !user.is_verified || isSubmitting || remainingCaptionQuota <= 0 || (iconFile && remainingIconQuota <= 0))}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-semibold hover:from-pink-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg sm:rounded-xl font-semibold hover:from-pink-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
               {!user?.is_verified ? (
                 <>
-                  <MdNearMeDisabled size={20} />
-                  Bạn cần xác thực email để đăng caption
+                  <MdNearMeDisabled size={18} />
+                  <span className="hidden sm:inline">Bạn cần xác thực email để đăng caption</span>
+                  <span className="sm:hidden">Cần xác thực email</span>
                 </>
               ) : isSubmitting ? (
                 <>
-                  <Loader2 size={20} className="animate-spin" />
-                  Đang đăng...
+                  <Loader2 size={18} className="animate-spin" />
+                  <span className="hidden sm:inline">Đang đăng...</span>
+                  <span className="sm:hidden">Đang đăng...</span>
                 </>
               ) : remainingCaptionQuota <= 0 ? (
                 <>
-                  <MdNearMeDisabled size={20} />
-                  Đã hết lượt upload caption hôm nay
+                  <MdNearMeDisabled size={18} />
+                  <span className="hidden sm:inline">Đã hết lượt upload caption hôm nay</span>
+                  <span className="sm:hidden">Hết lượt upload</span>
                 </>
               ) : iconFile && remainingIconQuota <= 0 ? (
                 <>
-                  <MdNearMeDisabled size={20} />
-                  Đã hết lượt upload icon hôm nay
+                  <MdNearMeDisabled size={18} />
+                  <span className="hidden sm:inline">Đã hết lượt upload icon hôm nay</span>
+                  <span className="sm:hidden">Hết lượt upload icon</span>
                 </>
               ) : (
                 <>
-                  <IoPaperPlane size={20} />
-                  Đăng Caption
+                  <IoPaperPlane size={18} />
+                  <span className="hidden sm:inline">Đăng Caption</span>
+                  <span className="sm:hidden">Đăng</span>
                 </>
               )}
             </button>
           </div>
-          <div className="flex justify-center items-center gap-2 text-sm text-gray-700 dark:text-gray-300 text-center">
+          <div className="flex justify-center items-center gap-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 text-center">
             <div
-              className="rounded-lg px-4 py-2 shadow-sm font-bold"
+              className="rounded-lg px-2 sm:px-4 py-2 shadow-sm font-bold text-xs sm:text-sm"
               style={{
                 background: "linear-gradient(to right, #f9a8d4, #8b5cf6)",
                 color: "#374151"
               }}
               >
-              Bạn còn {remainingCaptionQuota} lượt upload caption hôm nay
+              <span className="hidden sm:inline">Bạn còn {remainingCaptionQuota} lượt upload caption hôm nay</span>
+              <span className="sm:hidden">Còn {remainingCaptionQuota} lượt</span>
             </div>
           </div>
         </div>

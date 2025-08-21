@@ -112,65 +112,68 @@ export const StyleOptions = React.memo(({
   onGradientChange: (top: string, bottom: string) => void;
   gradientPresets: Array<{ top: string; bottom: string; name: string; }>;
 }) => (
-  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-pink-200 dark:border-gray-600">
-    <div className="flex items-center gap-2 mb-4">
-      <Palette className="text-pink-600 dark:text-pink-400" size={20} />
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-        Tùy chỉnh giao diện
-      </h3>
-      <Button className="bg-gradient-to-br from-pink-200 to-blue-300 text-black font-comic" onClick={() => {
+  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-200 dark:border-gray-600">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2 mb-4">
+      <div className="flex items-center gap-2">
+        <Palette className="text-pink-600 dark:text-pink-400" size={18} />
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+          Tùy chỉnh giao diện
+        </h3>
+      </div>
+      <Button className="bg-gradient-to-br from-pink-200 to-blue-300 text-black font-comic text-xs sm:text-sm px-3 sm:px-4 py-2" onClick={() => {
           const new_gradien = generateGradients(1)[0]
           onGradientChange(new_gradien.top, new_gradien.bottom)       
           onColorChange(new_gradien.color)
         toast.success(`Đã tạo một màu mới - ${new_gradien.name}!`)
       }}>
-        Random một màu mới
+        <span className="hidden sm:inline">Random một màu mới</span>
+        <span className="sm:hidden">Random màu</span>
       </Button>
     </div>
     
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Màu chữ
         </label>
         <input
           type="color"
           value={selectedColor}
           onChange={(e) => onColorChange(e.target.value)}
-          className="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+          className="w-full h-8 sm:h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Màu trên
           </label>
           <input
             type="color"
             value={selectedColorTop}
             onChange={(e) => onGradientChange(e.target.value, selectedColorBottom)}
-            className="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+            className="w-full h-8 sm:h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Màu dưới
           </label>
           <input
             type="color"
             value={selectedColorBottom}
             onChange={(e) => onGradientChange(selectedColorTop, e.target.value)}
-            className="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+            className="w-full h-8 sm:h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Gradient có sẵn
         </label>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {gradientPresets.map((preset, index) => (
             <button
               key={index}

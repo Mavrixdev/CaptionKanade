@@ -143,27 +143,27 @@ export const IconUpload: React.FC<IconUploadProps> = React.memo(
     }, [previewUrl]);
 
     return (
-      <div className="p-[2px] rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-pink-200 dark:border-gray-600">
-          <div className="flex items-center gap-2 mb-4">
-            <ImageIcon className="text-pink-600 dark:text-pink-400" size={20} />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Icon Caption</h3>
-            <Crown className="text-yellow-500" size={16} />
+      <div className="p-[2px] rounded-xl sm:rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-200 dark:border-gray-600">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <ImageIcon className="text-pink-600 dark:text-pink-400" size={18} />
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Icon Caption</h3>
+            <Crown className="text-yellow-500" size={14} />
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="flex items-center gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 aria-label="Upload icon"
               >
                 <Upload size={16} />
                 {isUploading ? "Đang tải..." : "Upload Icon"}
               </button>
 
-              <span className="text-sm text-gray-600 dark:text-gray-400">Còn {remainingQuota}/3 ảnh hôm nay</span>
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">Còn {remainingQuota}/3 ảnh hôm nay</span>
             </div>
 
             <input
@@ -192,14 +192,14 @@ export const IconUpload: React.FC<IconUploadProps> = React.memo(
         </div>
 
         {showCropper && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-2xl max-h-[90vh] flex flex-col">
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Cắt ảnh</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Điều chỉnh vùng cắt cho icon của bạn</p>
+              <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Cắt ảnh</h3>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Điều chỉnh vùng cắt cho icon của bạn</p>
               </div>
               
-              <div className="relative flex-1 bg-gray-100 dark:bg-gray-900 min-h-[400px]">
+              <div className="relative flex-1 bg-gray-100 dark:bg-gray-900 min-h-[300px] sm:min-h-[400px]">
                 <Cropper
                   image={imageSrc || undefined}
                   crop={crop}
@@ -211,16 +211,16 @@ export const IconUpload: React.FC<IconUploadProps> = React.memo(
                 />
               </div>
 
-              <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+              <div className="p-3 sm:p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2 sm:space-x-3">
                 <button 
                   onClick={handleCancel} 
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                  className="px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-sm sm:text-base"
                 >
                   Hủy
                 </button>
                 <button 
                   onClick={handleApply} 
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  className="px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm sm:text-base"
                 >
                   Áp dụng
                 </button>

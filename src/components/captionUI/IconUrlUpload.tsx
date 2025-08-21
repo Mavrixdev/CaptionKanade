@@ -115,15 +115,15 @@ export const IconUrlUpload: React.FC<IconUrlUploadProps> = React.memo(
     };
 
     return (
-      <div className="p-[2px] rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-pink-200 dark:border-gray-600">
-          <div className="flex items-center gap-2 mb-4">
-            <ImageIcon className="text-pink-600 dark:text-pink-400" size={20} />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Icon Caption</h3>
+      <div className="p-[2px] rounded-xl sm:rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-200 dark:border-gray-600">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <ImageIcon className="text-pink-600 dark:text-pink-400" size={18} />
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Icon Caption</h3>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <div className="flex-1">
                 <div className="relative">
                   <input
@@ -131,26 +131,26 @@ export const IconUrlUpload: React.FC<IconUrlUploadProps> = React.memo(
                     value={imageUrl}
                     onChange={handleUrlChange}
                     placeholder="Nhập URL ảnh (ví dụ: https://example.com/image.png)"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm sm:text-base"
                     disabled={isUploading}
                   />
                   {isValidUrl && (
-                    <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500" size={20} />
+                    <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500" size={18} />
                   )}
                   {urlError && (
-                    <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500" size={20} />
+                    <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500" size={18} />
                   )}
                 </div>
                 {urlError && (
-                  <p className="text-sm text-red-500 mt-1">{urlError}</p>
+                  <p className="text-xs sm:text-sm text-red-500 mt-1">{urlError}</p>
                 )}
               </div>
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">Còn {remainingQuota}/20 ảnh hôm nay</span>
+            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">Còn {remainingQuota}/20 ảnh hôm nay</span>
             <button
               onClick={handleApply}
               disabled={isUploading || !isValidUrl}
-              className="flex items-center gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               aria-label="Apply image URL"
             >
               <Link size={16} />

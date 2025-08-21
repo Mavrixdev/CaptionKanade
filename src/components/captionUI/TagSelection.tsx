@@ -20,25 +20,25 @@ export const TagsSection = React.memo(({
   };
 
   return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-pink-200 dark:border-gray-600">
-      <div className="flex items-center gap-2 mb-4">
-        <Hash className="text-pink-600 dark:text-pink-400" size={20} />
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-pink-200 dark:border-gray-600">
+      <div className="flex items-center gap-2 mb-3 sm:mb-4">
+        <Hash className="text-pink-600 dark:text-pink-400" size={18} />
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
           Tags
         </h3>
       </div>
       
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-3 sm:mb-4">
         <input
           value={tagInput}
           onChange={(e) => setTagInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
           placeholder="Thêm tag..."
-          className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+          className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base"
         />
         <button
           onClick={handleAddTag}
-          className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
+          className="px-3 sm:px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors text-sm sm:text-base"
         >
           Thêm
         </button>
@@ -48,14 +48,14 @@ export const TagsSection = React.memo(({
         {tags.map(tag => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 px-3 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-full text-sm"
+            className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 rounded-full text-xs sm:text-sm"
           >
             {tag}
             <button
               onClick={() => onRemoveTag(tag)}
               className="hover:text-pink-900 dark:hover:text-pink-100"
             >
-              <X size={14} />
+              <X size={12} />
             </button>
           </span>
         ))}
