@@ -30,6 +30,9 @@ export const UploadConfig: React.FC<UploadConfigProps> = ({
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Khi kích hoạt lựa chọn này, chỉ bạn có thể xem và chia sẻ caption đã đăng
             </p>
+            <p className="text-xs text-red-500">
+              Lưu ý nhỏ: Vẫn có thể được dev tìm thấy qua id mà bạn cung cấp
+            </p>
           </div>
         </div>
         
