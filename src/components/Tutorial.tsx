@@ -78,6 +78,20 @@ const Tutorial: React.FC = () => {
           <img src="/Tut3.png" alt="Tạo caption" className='w-full h-auto rounded-lg' />
         </section>
 
+        <section>
+          <h2 className='text-xl font-bold text-gray-900 dark:text-white mb-4'>
+            Collaboration - Locket DIO
+          </h2>
+          <video
+            controls
+            width="100%"
+            className="rounded-lg border border-pink-200 dark:border-gray-700 shadow"
+          >
+            <source src="/locketdio.mp4" type="video/mp4" />
+            Trình duyệt của bạn không hỗ trợ phát video.
+          </video>
+        </section>
+
         <footer className="text-center text-sm text-gray-600 dark:text-gray-300">
           Bạn có thể bắt đầu tạo caption thật tại phần "Caption Studio".
         </footer>
