@@ -22,6 +22,7 @@ export const IconUrlUpload: React.FC<IconUrlUploadProps> = React.memo(
     const [previewUrl, setPreviewUrl] = useState<string | null>(iconPreview);
     const [isValidUrl, setIsValidUrl] = useState<boolean>(false);
     const [urlError, setUrlError] = useState<string>("");
+    const [isValidating, setIsValidating] = useState<boolean>(false);
 
     // Sync with iconPreview prop when it changes
     React.useEffect(() => {
@@ -53,30 +54,89 @@ export const IconUrlUpload: React.FC<IconUrlUploadProps> = React.memo(
       }
     };
 
-    // Validate URL
-    const validateUrl = (url: string) => {
+    // Check if image can actually be loaded and displayed
+    const canLoadImage = (url: string): Promise<boolean> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          console.log("[canLoadImage] Ảnh load thành công:", url);
+          resolve(true);
+        };
+        
+        img.onerror = () => {
+          console.warn("[canLoadImage] Không thể load ảnh:", url);
+          resolve(false);
+        };
+        
+        // Set timeout to prevent hanging
+        const timeout = setTimeout(() => {
+          console.warn("[canLoadImage] Timeout khi load ảnh:", url);
+          resolve(false);
+        }, 10000); // 10 seconds timeout
+        
+        img.onload = () => {
+          clearTimeout(timeout);
+          console.log("[canLoadImage] Ảnh load thành công:", url);
+          resolve(true);
+        };
+        
+        img.onerror = () => {
+          clearTimeout(timeout);
+          console.warn("[canLoadImage] Không thể load ảnh:", url);
+          resolve(false);
+        };
+        
+        // Start loading the image
+        img.src = url;
+      });
+    };
+
+    // Validate URL - now properly async
+    const validateUrl = async (url: string) => {
       if (!url.trim()) {
         setIsValidUrl(false);
         setUrlError("");
         return;
       }
 
-      // Check if URL has valid format
-      if (!isValidImageUrl(url)) {
-        setIsValidUrl(false);
-        setUrlError("URL phải chứa định dạng ảnh hợp lệ (.gif, .png, .jpg, .jpeg, .webp)");
-        return;
-      }
-
-      // Check if URL is direct image link
-      if (!isDirectImageUrl(url)) {
-        setIsValidUrl(false);
-        setUrlError("URL phải là link ảnh trực tiếp (không phải trang web chứa ảnh)");
-        return;
-      }
-
-      setIsValidUrl(true);
+      setIsValidating(true);
       setUrlError("");
+
+      try {
+        // Check if URL has valid format
+        if (!isValidImageUrl(url)) {
+          setIsValidUrl(false);
+          setUrlError("URL phải chứa định dạng ảnh hợp lệ (.gif, .png, .jpg, .jpeg, .webp)");
+          return;
+        }
+
+        // Check if URL is direct image link
+        if (!isDirectImageUrl(url)) {
+          setIsValidUrl(false);
+          setUrlError("URL phải là link ảnh trực tiếp (không phải trang web chứa ảnh)");
+          return;
+        }
+
+        // Check if image can actually be loaded
+        const canLoad = await canLoadImage(url);
+        if (!canLoad) {
+          setIsValidUrl(false);
+          setUrlError("Không thể load ảnh từ URL này. Vui lòng kiểm tra lại link hoặc thử link khác.");
+          return;
+        }
+
+        // If all checks pass
+        setIsValidUrl(true);
+        setUrlError("");
+        
+      } catch (error) {
+        console.error("[validateUrl] Lỗi khi validate URL:", error);
+        setIsValidUrl(false);
+        setUrlError("Có lỗi xảy ra khi kiểm tra URL. Vui lòng thử lại.");
+      } finally {
+        setIsValidating(false);
+      }
     };
 
     const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -132,24 +192,32 @@ export const IconUrlUpload: React.FC<IconUrlUploadProps> = React.memo(
                     onChange={handleUrlChange}
                     placeholder="Nhập URL ảnh (ví dụ: https://example.com/image.png)"
                     className="w-full px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm sm:text-base"
-                    disabled={isUploading}
+                    disabled={isUploading || isValidating}
                   />
-                  {isValidUrl && (
+                  {isValidating && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-500"></div>
+                    </div>
+                  )}
+                  {isValidUrl && !isValidating && (
                     <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500" size={18} />
                   )}
-                  {urlError && (
+                  {urlError && !isValidating && (
                     <AlertCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500" size={18} />
                   )}
                 </div>
                 {urlError && (
                   <p className="text-xs sm:text-sm text-red-500 mt-1">{urlError}</p>
                 )}
+                {isValidating && (
+                  <p className="text-xs sm:text-sm text-blue-500 mt-1">Đang kiểm tra ảnh...</p>
+                )}
               </div>
             </div>
             <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">Còn {remainingQuota}/20 ảnh hôm nay</span>
             <button
               onClick={handleApply}
-              disabled={isUploading || !isValidUrl}
+              disabled={isUploading || !isValidUrl || isValidating}
               className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               aria-label="Apply image URL"
             >
@@ -172,6 +240,7 @@ export const IconUrlUpload: React.FC<IconUrlUploadProps> = React.memo(
               • URL phải là link ảnh trực tiếp, không phải trang web chứa ảnh<br />
               • Link ảnh phải sống liên tục nếu muốn ảnh hiển thị trong locket<br />
               • Up ảnh chết lưu rồi thì phải xóa<br />
+              • Hệ thống sẽ kiểm tra xem ảnh có load được không trước khi cho phép sử dụng
             </div>
           </div>
         </div>
