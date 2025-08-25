@@ -170,6 +170,13 @@ const Login: React.FC = () => {
             >
               Điều khoản dịch vụ
             </Link>
+            <span className="hidden sm:inline">•</span>
+            <Link 
+              to="/contact" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Liên hệ
+            </Link>
           </div>
         </div>
       </div>

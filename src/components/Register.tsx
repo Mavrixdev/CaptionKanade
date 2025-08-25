@@ -219,6 +219,13 @@ const Register: React.FC = () => {
             >
               Điều khoản dịch vụ
             </Link>
+            <span className="hidden sm:inline">•</span>
+            <Link 
+              to="/contact" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Liên hệ
+            </Link>
           </div>
           <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
             Bằng việc đăng ký, bạn đồng ý với <Link to="/terms" className="underline hover:text-pink-500">Điều khoản dịch vụ</Link> và <Link to="/privacy" className="underline hover:text-pink-500">Chính sách bảo mật</Link> của chúng tôi.

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const mockSteps = [
   {
@@ -93,7 +94,22 @@ const Tutorial: React.FC = () => {
         </section>
 
         <footer className="text-center text-sm text-gray-600 dark:text-gray-300">
-          Bạn có thể bắt đầu tạo caption thật tại phần "Caption Studio".
+          <p className="mb-2">Bạn có thể bắt đầu tạo caption thật tại phần "Caption Studio".</p>
+          <div className="flex items-center justify-center space-x-4 text-xs">
+            <Link 
+              to="/" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Trang chủ
+            </Link>
+            <span>•</span>
+            <Link 
+              to="/contact" 
+              className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+            >
+              Liên hệ
+            </Link>
+          </div>
         </footer>
       </div>
     </div>

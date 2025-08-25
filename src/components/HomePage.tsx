@@ -141,6 +141,13 @@ const HomePage: React.FC = () => {
               >
                 Điều khoản dịch vụ
               </Link>
+              <span className="hidden sm:inline">•</span>
+              <Link 
+                to="/contact" 
+                className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+              >
+                Liên hệ
+              </Link>
             </div>
             <p className="text-gray-500 dark:text-gray-400">
               © {new Date().getFullYear()} CaptionKanade. Tất cả quyền được bảo lưu.

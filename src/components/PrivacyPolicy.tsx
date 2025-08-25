@@ -159,6 +159,23 @@ const PrivacyPolicy: React.FC = () => {
 
           {/* Footer */}
           <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
+            <div className="text-center mb-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-500 dark:text-gray-400">
+                <Link 
+                  to="/" 
+                  className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+                >
+                  Trang chủ
+                </Link>
+                <span className="hidden sm:inline">•</span>
+                <Link 
+                  to="/contact" 
+                  className="hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
+                >
+                  Liên hệ
+                </Link>
+              </div>
+            </div>
             <p className="text-center text-gray-500 dark:text-gray-400">
               © {new Date().getFullYear()} CaptionKanade. Tất cả quyền được bảo lưu.
             </p>

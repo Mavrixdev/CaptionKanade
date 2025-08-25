@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Home, Edit3, BookOpen, Moon, Sun, LogOut, HelpCircle } from 'lucide-react';
+import { Menu, Home, Edit3, BookOpen, Moon, Sun, LogOut, HelpCircle, MessageCircle } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { MdOutlineCollectionsBookmark } from "react-icons/md";
 import HomePage from './components/HomePage';
 import CaptionBuilder from './components/CaptionBuilder';
 import CaptionLibrary from './components/CaptionLibrary';
 import Tutorial from './components/Tutorial';
+import ContactPage from './components/ContactPage';
 import Login from './components/Login';
 import Register from './components/Register';
 import UserPage from './components/UserPage';
@@ -60,6 +61,7 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
     { id: '/builder', label: 'Caption Studio', icon: Edit3 },
     { id: '/library', label: 'Library', icon: BookOpen },
     { id: '/tutorial', label: 'Hướng dẫn', icon: HelpCircle },
+    { id: '/contact', label: 'Liên hệ', icon: MessageCircle },
   ];
 
   const beta_page: NavigationItem[] = [
@@ -382,6 +384,10 @@ const App: React.FC = () => {
               
               <Route path="/tutorial" element={
                   <Tutorial />
+              } />
+              
+              <Route path="/contact" element={
+                  <ContactPage />
               } />
               
               <Route path="/profile" element={
