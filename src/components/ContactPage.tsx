@@ -23,7 +23,7 @@ const ContactPage: React.FC = () => {
                 <img src="/admin.jfif" alt="Admin" className="w-full h-full object-cover rounded-full" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Admin</h2>
-              <p className="text-gray-600 dark:text-gray-300">ArisDev</p>
+              <p className="text-gray-600 dark:text-gray-300">Arisdev</p>
             </div>
             
             <div className="space-y-4">
