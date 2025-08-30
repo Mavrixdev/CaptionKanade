@@ -19,10 +19,8 @@ interface RecentImage {
 export const IconUploadRecent: React.FC<IconUploadRecentProps> = React.memo(
   ({
     iconPreview = null,
-    isUploading = false,
     onUpload,
     onRemove,
-    remainingQuota = 3,
   }: IconUploadRecentProps) => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(iconPreview);
     const [recentImages, setRecentImages] = useState<RecentImage[]>([]);
