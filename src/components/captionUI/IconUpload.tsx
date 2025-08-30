@@ -182,8 +182,6 @@ export const IconUpload: React.FC<IconUploadProps> = React.memo(
                 </button>
               </div>
             )}
-
-            <p className="font-bold text-red-600">Lâu lâu bị lỗi, gợi ý upload bằng URL</p>
             <div className="text-xs text-gray-500 dark:text-gray-400">
               • Chỉ file PNG/GIF/WebP, tối đa 1MB cho ảnh và 3MB cho gif<br />
               • Tỷ lệ vuông (1:1) được khuyến nghị<br />
