@@ -386,6 +386,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (data.error === "wrong_email_or_password") {
           throw new Error('Email hoặc mật khẩu không chính xác');
         }
+        if (data.error === "login_method_not_allowed") {
+          throw new Error('Không thể đăng nhập bằng mật khẩu, hãy sử dụng nút đăng nhập bằng google');
+        }
         throw new Error(data.detail || 'Đăng nhập thất bại');
       }
 
