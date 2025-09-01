@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useRef, useEffect, useState} from "react";
 import { Calendar, Heart, Tag, Trash2, Sparkles, TrendingUp } from "lucide-react";
 import { FaHeart } from "react-icons/fa6";
 import { FaHashtag } from "react-icons/fa";
@@ -25,6 +25,24 @@ export const CaptionItem: React.FC<CaptionProps> = ({
   handleDelete 
 }) => {
   const [open, setOpen] = useState(false);
+
+  const groupNameRef = useRef<HTMLDivElement | null>(null)
+  const [shouldMarquee, setShouldMarquee] = useState(false)
+
+  useEffect(() => {
+    const evaluateOverflow = () => {
+      const el = groupNameRef.current
+      if (!el) return
+      const isOverflowing = el.scrollWidth > el.clientWidth
+      setShouldMarquee(isOverflowing)
+    }
+
+    // đo lần đầu và khi resize
+    evaluateOverflow()
+    window.addEventListener('resize', evaluateOverflow)
+    return () => window.removeEventListener('resize', evaluateOverflow)
+  }, [])
+
 
   const handleCopy = () => {
   try {
@@ -82,14 +100,22 @@ export const CaptionItem: React.FC<CaptionProps> = ({
                 " 
               />
             )}
-            <span 
-              className="text-sm font-bold truncate max-w-48
-                lg:text-lg lg:max-w-xl
-              "
-              style={{ color: caption.color }}
+            {/* Bọc span trong một div có overflow-x-hidden và width cố định để marquee không chạy qua ảnh */}
+            <div 
+              className="overflow-x-hidden"
+              style={{
+                maxWidth: '12rem', // max-w-48 ~ 192px
+                flex: 1,
+              }}
             >
-              {caption.text.length > 40 ? `${caption.text.substring(0, 40)}...` : caption.text.trim() || 'Caption Kanade'}
-            </span>
+              <span 
+                ref={groupNameRef}
+                className={`text-sm font-bold ${shouldMarquee ? 'animate-marquee whitespace-nowrap' : 'truncate'} block lg:text-lg`}
+                style={{ color: caption.color }}
+              >
+                {caption.text.length > 40 ? `${caption.text.substring(0, 40)}...` : caption.text.trim() || 'Caption Kanade'}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -222,7 +248,7 @@ export const CaptionItem: React.FC<CaptionProps> = ({
                   className="text-md sm:text-xl font-bold truncate max-w-48 sm:max-w-xs"
                   style={{ color: caption.color }}
                 >
-                  {caption.text.length > 40 ? `${caption.text.substring(0, 40)}...` : caption.text.trim() || 'Caption Kanade'}
+                  {caption.text.trim() || 'Caption Kanade'}
                 </span>
               </div>
             </div>
