@@ -2,18 +2,19 @@ import { BookOpen, Edit3, Flame, HelpCircle, Home, LogOut, Menu, MessageCircle, 
 import React, { useEffect, useState } from 'react';
 import { MdOutlineCollectionsBookmark } from "react-icons/md";
 import { Link, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
-import CaptionBuilder from './components/CaptionBuilder';
-import CaptionLibrary from './components/CaptionLibrary';
-import ContactPage from './components/ContactPage';
-import EmailVerification from './components/EmailVerification';
-import Login from './components/Login';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import Register from './components/Register';
-import ResetPassword from './components/ResetPassword';
-import TermsOfService from './components/TermsOfService';
-import Trending from './components/Trending';
-import Tutorial from './components/Tutorial';
-import UserPage from './components/UserPage';
+// import HomePage from './components/HomePage';
+// import CaptionBuilder from './components/CaptionBuilder';
+// import CaptionLibrary from './components/CaptionLibrary';
+// import Tutorial from './components/Tutorial';
+// import Trending from './components/Trending';
+// import ContactPage from './components/ContactPage';
+// import Login from './components/Login';
+// import Register from './components/Register';
+// import UserPage from './components/UserPage';
+// import EmailVerification from './components/EmailVerification';
+// import ResetPassword from './components/ResetPassword';
+// import PrivacyPolicy from './components/PrivacyPolicy';
+// import TermsOfService from './components/TermsOfService';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CaptionProvider } from './contexts/CaptionContext';
@@ -365,49 +366,44 @@ const App: React.FC = () => {
           
           <Layout>
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/verify-email" element={<EmailVerification />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
+              {/*<Route path="/login" element={<Login />} />*/}
+              {/*<Route path="/register" element={<Register />} />*/}
+              {/*<Route path="/verify-email" element={<EmailVerification />} />*/}
+              {/*<Route path="/reset-password" element={<ResetPassword />} />*/}
               
-              <Route path="/builder" element={
-                <ProtectedRoute requireVerified>
-                  <CaptionBuilder />
-                </ProtectedRoute>
-              } />
+              {/*<Route path="/" element={*/}
+              {/*    <HomePage />*/}
+              {/*} />*/}
               
-              <Route path="/library" element={
-                <ProtectedRoute requireVerified>
-                  <CaptionLibrary />
-                </ProtectedRoute>
-              } />
+              {/*<Route path="/builder" element={*/}
+              {/*  <ProtectedRoute requireVerified>*/}
+              {/*    <CaptionBuilder />*/}
+              {/*  </ProtectedRoute>*/}
+              {/*} />*/}
               
-              <Route path="/trending" element={
-                <ProtectedRoute requireVerified>
-                  <Trending />
-                </ProtectedRoute>
-              } />
+              {/*<Route path="/library" element={*/}
+              {/*    <CaptionLibrary />*/}
+              {/*} />*/}
+              {/*<Route path="/trending" element={*/}
+              {/*    <Trending />*/}
+              {/*} />*/}
               
-              <Route path="/tutorial" element={
-                <ProtectedRoute requireVerified>
-                  <Tutorial />
-                </ProtectedRoute>
-              } />
+              {/*<Route path="/tutorial" element={*/}
+              {/*    <Tutorial />*/}
+              {/*} />*/}
               
-              <Route path="/contact" element={
-                <ProtectedRoute requireVerified>
-                  <ContactPage />
-                </ProtectedRoute>
-              } />
+              {/*<Route path="/contact" element={*/}
+              {/*    <ContactPage />*/}
+              {/*} />*/}
               
-              <Route path="/profile" element={
-                <ProtectedRoute requireVerified>
-                  <UserPage />
-                </ProtectedRoute>
-              } />
+              {/*<Route path="/profile" element={*/}
+              {/*  <ProtectedRoute requireVerified>*/}
+              {/*    <UserPage />*/}
+              {/*  </ProtectedRoute>*/}
+              {/*} />*/}
               
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
+              {/*<Route path="/privacy" element={<PrivacyPolicy />} />*/}
+              {/*<Route path="/terms" element={<TermsOfService />} />*/}
             </Routes>
           </Layout>
         </CaptionProvider>
