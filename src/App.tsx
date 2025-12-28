@@ -1,37 +1,39 @@
-import { BookOpen, Edit3, Flame, HelpCircle, Home, LogOut, Menu, MessageCircle, Moon, Sun } from 'lucide-react';
+import { BadgeCheck, BookOpen, Edit3, Flame, HelpCircle, Home, LogOut, Menu, MessageCircle, Moon, Sun } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { MdOutlineCollectionsBookmark } from "react-icons/md";
-import { Link, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
-// import HomePage from './components/HomePage';
-// import CaptionBuilder from './components/CaptionBuilder';
-// import CaptionLibrary from './components/CaptionLibrary';
-// import Tutorial from './components/Tutorial';
-// import Trending from './components/Trending';
-// import ContactPage from './components/ContactPage';
-// import Login from './components/Login';
-// import Register from './components/Register';
-// import UserPage from './components/UserPage';
-// import EmailVerification from './components/EmailVerification';
-// import ResetPassword from './components/ResetPassword';
-// import PrivacyPolicy from './components/PrivacyPolicy';
-// import TermsOfService from './components/TermsOfService';
+import { MdOutlineCollectionsBookmark } from 'react-icons/md';
+import { Link, Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { CaptionProvider } from './contexts/CaptionContext';
-// import ProtectedRoute from './components/ProtectedRoute';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { BadgeCheckIcon } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { CaptionProvider } from './contexts/CaptionContext';
+
+// === Các component đã được comment thì mở ra khi bạn đã implement xong ===
+import CaptionBuilder from './components/CaptionBuilder';
+import CaptionLibrary from './components/CaptionLibrary';
+import ContactPage from './components/ContactPage';
+import EmailVerification from './components/EmailVerification';
+import HomePage from './components/HomePage';
+import Login from './components/Login';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import Register from './components/Register';
+import ResetPassword from './components/ResetPassword';
+import TermsOfService from './components/TermsOfService';
+import Trending from './components/Trending';
+import Tutorial from './components/Tutorial';
+import UserPage from './components/UserPage';
+
+// import ProtectedRoute from './components/ProtectedRoute'; // Mở khi cần dùng
 
 interface NavigationItem {
   id: string;
   label: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) => {
@@ -44,12 +46,22 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
     if (savedTheme === 'dark') {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
+    } else if (savedTheme === 'light') {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    }
+    // Nếu chưa có thì mặc định theo system preference (tùy chọn)
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    if (!isDarkMode) {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+
+    if (newMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('captionkanade-theme', 'dark');
     } else {
@@ -67,17 +79,13 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
     { id: '/contact', label: 'Liên hệ', icon: MessageCircle },
   ];
 
-  const beta_page: NavigationItem[] = [
-    {id: '#', label: "Quản lý bộ sưu tập", icon: MdOutlineCollectionsBookmark}
-  ]
+  const betaPages: NavigationItem[] = [
+    { id: '#', label: 'Quản lý bộ sưu tập', icon: MdOutlineCollectionsBookmark },
+  ];
 
-  const getUserInitials = (user: any) => {
-    if (user?.username) {
-      return user.username.slice(0, 2).toUpperCase();
-    }
-    if (user?.email) {
-      return user.email.slice(0, 2).toUpperCase();
-    }
+  const getUserInitials = (user: any): string => {
+    if (user?.username) return user.username.slice(0, 2).toUpperCase();
+    if (user?.email) return user.email.slice(0, 2).toUpperCase();
     return 'U';
   };
 
@@ -85,8 +93,8 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="p-6 border-b">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent"
         >
           CaptionKanade
@@ -99,10 +107,11 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
           {navigation.map(({ id, label, icon: Icon }) => (
             <Button
               key={id}
-              variant={location.pathname === id ? "secondary" : "ghost"}
+              variant={location.pathname === id ? 'secondary' : 'ghost'}
               className={cn(
-                "w-full justify-start h-12 px-4",
-                location.pathname === id && "bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 hover:bg-pink-200 dark:hover:bg-pink-900/40"
+                'w-full justify-start h-12 px-4',
+                location.pathname === id &&
+                  'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 hover:bg-pink-200 dark:hover:bg-pink-900/40'
               )}
               asChild
             >
@@ -115,24 +124,18 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
         </div>
       </nav>
 
-      {/* Beta Pages - Đang phát triển */}
+      {/* Beta Pages */}
       <div className="px-4 mt-2 mb-2">
         <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
           Tính năng thử nghiệm
         </div>
         <div className="space-y-1">
-          {beta_page.map(({ id, label, icon: Icon }) => (
+          {betaPages.map(({ id, label, icon: Icon }) => (
             <Button
               key={id}
               disabled
               variant="ghost"
-              className={cn(
-                "w-full justify-start h-12 px-4 cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700",
-                "hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-400 dark:hover:text-gray-500"
-              )}
-              style={{
-                pointerEvents: "none"
-              }}
+              className="w-full justify-start h-12 px-4 cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
               asChild
             >
               <span>
@@ -147,32 +150,35 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
       <Separator />
 
       {/* Footer */}
-      <div className="p-4 space-y-2">
-        {/* User Section */}
+      <div className="p-4 space-y-3">
         {user ? (
-          <div className="space-y-2">
+          <>
             <Button variant="ghost" className="w-full justify-start h-auto p-3" asChild>
               <Link to="/profile" onClick={onNavigate}>
                 <div className="flex items-center space-x-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/avatar.png" />
-                    <AvatarFallback className="bg-pink-100 text-pink-700 text-xs font-semibold">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src="/avatar.png" alt={user.username || 'User'} />
+                    <AvatarFallback className="bg-pink-100 text-pink-700 text-sm font-semibold">
                       {getUserInitials(user)}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col items-start">
-                    <span className="text-sm font-medium">
-                      {user.username ? `@${user.username}` : user.email.slice(0, 20)}
+                  <div className="flex flex-col items-start min-w-0">
+                    <span className="text-sm font-medium truncate max-w-[160px]">
+                      {user.username ? `@${user.username}` : user.email.split('@')[0]}
                     </span>
-                    <div className="flex items-center gap-[5px]">
+                    <div className="flex items-center gap-1.5 mt-0.5">
                       {user.is_verified && (
-                        <Badge variant="secondary" className="bg-green-500 text-white dark:bg-green-600 px-1 py-0 text-[10px] h-5 flex items-center">
-                          <BadgeCheckIcon className="w-3 h-3 mr-1" />
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-600 hover:bg-green-600 text-white px-1.5 py-0 text-[10px] h-5"
+                        >
+                          <BadgeCheck className="w-3 h-3 mr-1" />
+                          Đã xác thực
                         </Badge>
                       )}
-                      {user?.id === "0fd2189f-1873-42bb-b2c8-6443772d12e3" && (
-                        <Badge variant="secondary" className="text-xs px-2 py-0 bg-gradient-to-r from-pink-300 to-blue-300 text-white h-5 flex items-center">
-                          Admin - Developer
+                      {user?.id === '0fd2189f-1873-42bb-b2c8-6443772d12e3' && (
+                        <Badge className="text-xs bg-gradient-to-r from-pink-500 to-purple-600 text-white h-5 px-2">
+                          Admin
                         </Badge>
                       )}
                     </div>
@@ -181,41 +187,41 @@ const SidebarContent: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
               </Link>
             </Button>
 
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
               onClick={logout}
             >
               <LogOut className="mr-3 h-4 w-4" />
               Đăng xuất
             </Button>
-          </div>
+          </>
         ) : (
           <div className="space-y-2">
-            <Button className="w-full bg-pink-500 hover:bg-pink-600" asChild>
-              <Link to="/login" onClick={onNavigate}>Đăng nhập</Link>
+            <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700" asChild>
+              <Link to="/login" onClick={onNavigate}>
+                Đăng nhập
+              </Link>
             </Button>
             <Button variant="outline" className="w-full" asChild>
-              <Link to="/register" onClick={onNavigate}>Đăng ký</Link>
+              <Link to="/register" onClick={onNavigate}>
+                Đăng ký
+              </Link>
             </Button>
           </div>
         )}
 
         {/* Theme Toggle */}
-        <Button 
-          variant="outline" 
-          className="w-full justify-start"
-          onClick={toggleTheme}
-        >
+        <Button variant="outline" className="w-full justify-start mt-2" onClick={toggleTheme}>
           {isDarkMode ? (
             <>
               <Sun className="mr-3 h-4 w-4" />
-              Light Mode
+              Chế độ sáng
             </>
           ) : (
             <>
               <Moon className="mr-3 h-4 w-4" />
-              Dark Mode
+              Chế độ tối
             </>
           )}
         </Button>
@@ -322,17 +328,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     </div>
   );
 };
-
 const App: React.FC = () => {
   useEffect(() => {
-    // Hiển thị thông báo khi người dùng truy cập vào trang
     console.log(
-      "%cChờ chút",
-      "color: blue; font-size: 40px; font-weight: bold;"
-    )
+      '%cChờ chút nha...',
+      'color: #ec4899; font-size: 42px; font-weight: bold;'
+    );
     console.log(
-      "%cNếu bạn muốn sử dụng api của CaptionKanade, hãy apply với admin tại discord: https://discord.chisadin.site để được cung cấp quyền truy cập api chính thống và documents",
-      "color: black; font-size: 18px; font-weight: bold; font-style: italic; background: #ffdcff;"
+      '%cMuốn dùng API CaptionKanade? Inbox admin trên Discord nhé!\n→ https://discord.chisadin.site',
+      'color: #000; font-size: 16px; font-weight: 600; background: #fce7f3; padding: 8px 12px; border-radius: 6px;'
     );
   }, []);
 
@@ -343,67 +347,36 @@ const App: React.FC = () => {
           <Toaster
             position="top-right"
             toastOptions={{
-              duration: 3000,
+              duration: 4000,
               style: {
-                background: '#333',
-                color: '#fff',
-                borderRadius: '8px',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#10B981',
-                  secondary: '#fff',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#EF4444',
-                  secondary: '#fff',
-                },
+                background: '#1f2937',
+                color: '#f3f4f6',
+                borderRadius: '10px',
+                border: '1px solid #374151',
               },
             }}
           />
-          
+
           <Layout>
             <Routes>
-              {/*<Route path="/login" element={<Login />} />*/}
-              {/*<Route path="/register" element={<Register />} />*/}
-              {/*<Route path="/verify-email" element={<EmailVerification />} />*/}
-              {/*<Route path="/reset-password" element={<ResetPassword />} />*/}
-              
-              {/*<Route path="/" element={*/}
-              {/*    <HomePage />*/}
-              {/*} />*/}
-              
-              {/*<Route path="/builder" element={*/}
-              {/*  <ProtectedRoute requireVerified>*/}
-              {/*    <CaptionBuilder />*/}
-              {/*  </ProtectedRoute>*/}
-              {/*} />*/}
-              
-              {/*<Route path="/library" element={*/}
-              {/*    <CaptionLibrary />*/}
-              {/*} />*/}
-              {/*<Route path="/trending" element={*/}
-              {/*    <Trending />*/}
-              {/*} />*/}
-              
-              {/*<Route path="/tutorial" element={*/}
-              {/*    <Tutorial />*/}
-              {/*} />*/}
-              
-              {/*<Route path="/contact" element={*/}
-              {/*    <ContactPage />*/}
-              {/*} />*/}
-              
-              {/*<Route path="/profile" element={*/}
-              {/*  <ProtectedRoute requireVerified>*/}
-              {/*    <UserPage />*/}
-              {/*  </ProtectedRoute>*/}
-              {/*} />*/}
-              
-              {/*<Route path="/privacy" element={<PrivacyPolicy />} />*/}
-              {/*<Route path="/terms" element={<TermsOfService />} />*/}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<EmailVerification />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+
+              <Route path="/" element={<HomePage />} />
+              <Route path="/builder" element={<CaptionBuilder />} />
+              <Route path="/library" element={<CaptionLibrary />} />
+              <Route path="/trending" element={<Trending />} />
+              <Route path="/tutorial" element={<Tutorial />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/profile" element={<UserPage />} />
+
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+
+              {/* 404 hoặc redirect nếu muốn */}
+              {/* <Route path="*" element={<NotFound />} /> */}
             </Routes>
           </Layout>
         </CaptionProvider>
