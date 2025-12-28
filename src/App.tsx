@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, Home, Edit3, BookOpen, Moon, Sun, LogOut, HelpCircle, MessageCircle, Flame } from 'lucide-react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BookOpen, Edit3, Flame, HelpCircle, Home, LogOut, Menu, MessageCircle, Moon, Sun } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { MdOutlineCollectionsBookmark } from "react-icons/md";
+import { Link, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 // import HomePage from './components/HomePage';
 // import CaptionBuilder from './components/CaptionBuilder';
 // import CaptionLibrary from './components/CaptionLibrary';
@@ -15,17 +15,18 @@ import { MdOutlineCollectionsBookmark } from "react-icons/md";
 // import ResetPassword from './components/ResetPassword';
 // import PrivacyPolicy from './components/PrivacyPolicy';
 // import TermsOfService from './components/TermsOfService';
-import { CaptionProvider } from './contexts/CaptionContext';
+
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { CaptionProvider } from './contexts/CaptionContext';
 // import ProtectedRoute from './components/ProtectedRoute';
-import { Toaster } from 'react-hot-toast';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { BadgeCheckIcon } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 
 interface NavigationItem {
   id: string;
@@ -403,8 +404,6 @@ const App: React.FC = () => {
               
               {/*<Route path="/privacy" element={<PrivacyPolicy />} />*/}
               {/*<Route path="/terms" element={<TermsOfService />} />*/}
-              
-              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Layout>
         </CaptionProvider>
