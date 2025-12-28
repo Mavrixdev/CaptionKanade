@@ -2,7 +2,7 @@ import { BookOpen, Edit3, Flame, HelpCircle, Home, LogOut, Menu, MessageCircle, 
 import React, { useEffect, useState } from 'react';
 import { MdOutlineCollectionsBookmark } from "react-icons/md";
 import { Link, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
-// import HomePage from './components/HomePage';
+import HomePage from './components/HomePage';
 // import CaptionBuilder from './components/CaptionBuilder';
 // import CaptionLibrary from './components/CaptionLibrary';
 // import Tutorial from './components/Tutorial';
@@ -371,9 +371,9 @@ const App: React.FC = () => {
               {/*<Route path="/verify-email" element={<EmailVerification />} />*/}
               {/*<Route path="/reset-password" element={<ResetPassword />} />*/}
               
-              {/*<Route path="/" element={*/}
-              {/*    <HomePage />*/}
-              {/*} />*/}
+              <Route path="/" element={
+                  <HomePage />
+              } />
               
               {/*<Route path="/builder" element={*/}
               {/*  <ProtectedRoute requireVerified>*/}
